@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Confiddo</title>
+  <meta name="description" content="Privacy Policy for the Confiddo app. Learn how we collect, use, and protect your data.">
+  <meta name="theme-color" content="#0F172A">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --slate-900: #0F172A;
+      --slate-800: #1E293B;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748B;
+      --slate-400: #94A3B8;
+      --slate-200: #E2E8F0;
+      --slate-100: #F1F5F9;
+      --slate-50:  #F8FAFC;
+      --blue:      #2563EB;
+      --blue-light:#3B82F6;
+      --blue-tint: #EFF6FF;
+      --orange:    #FF6B00;
+      --orange-tint: #FFF7ED;
+      --white:     #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--slate-800);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--slate-200);
+      height: 64px;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-brand svg { width: 32px; height: 32px; }
+
+    .nav-brand span {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--slate-800);
+    }
+
+    .nav-back {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--orange); }
+
+    /* CONTENT */
+    .policy-header {
+      padding: 120px 0 48px;
+      text-align: center;
+      background: var(--slate-50);
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .policy-header h1 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 8px;
+    }
+
+    .policy-header .effective-date {
+      font-size: 14px;
+      color: var(--slate-500);
+    }
+
+    .policy-body {
+      padding: 56px 0 80px;
+    }
+
+    .policy-content {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .policy-content h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin: 40px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--slate-100);
+    }
+
+    .policy-content h2:first-child {
+      margin-top: 0;
+    }
+
+    .policy-content h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--slate-700);
+      margin: 24px 0 8px;
+    }
+
+    .policy-content p {
+      font-size: 15px;
+      color: var(--slate-600);
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+
+    .policy-content ul, .policy-content ol {
+      margin: 8px 0 16px 20px;
+    }
+
+    .policy-content li {
+      font-size: 15px;
+      color: var(--slate-600);
+      line-height: 1.7;
+      margin-bottom: 6px;
+    }
+
+    .policy-content a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .policy-content a:hover {
+      text-decoration: underline;
+    }
+
+    .policy-content .highlight-box {
+      background: var(--blue-tint);
+      border-left: 3px solid var(--blue);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    .policy-content .highlight-box p {
+      color: var(--slate-700);
+      margin-bottom: 0;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 48px 0;
+      background: var(--slate-900);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--slate-500);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--slate-500);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--slate-200); }
+
+    @media (max-width: 768px) {
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">
+        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pn0" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="30%" stop-color="rgb(70,100,200)"/><stop offset="100%" stop-color="rgb(37,99,235)"/></linearGradient>
+            <linearGradient id="pn1" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="34%" stop-color="rgb(89,101,179)"/><stop offset="100%" stop-color="rgb(64,100,206)"/></linearGradient>
+            <linearGradient id="pn2" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="39%" stop-color="rgb(108,102,159)"/><stop offset="100%" stop-color="rgb(92,101,176)"/></linearGradient>
+            <linearGradient id="pn3" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="43%" stop-color="rgb(127,102,138)"/><stop offset="100%" stop-color="rgb(119,102,147)"/></linearGradient>
+            <linearGradient id="pn4" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="48%" stop-color="rgb(146,103,118)"/><stop offset="100%" stop-color="rgb(146,103,118)"/></linearGradient>
+            <linearGradient id="pn5" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="52%" stop-color="rgb(165,104,97)"/><stop offset="100%" stop-color="rgb(173,104,88)"/></linearGradient>
+            <linearGradient id="pn6" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="56%" stop-color="rgb(184,104,76)"/><stop offset="100%" stop-color="rgb(201,105,59)"/></linearGradient>
+            <linearGradient id="pn7" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="61%" stop-color="rgb(203,105,56)"/><stop offset="100%" stop-color="rgb(228,106,29)"/></linearGradient>
+            <linearGradient id="pn8" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="#2563EB"/><stop offset="65%" stop-color="rgb(222,106,35)"/><stop offset="100%" stop-color="rgb(255,107,0)"/></linearGradient>
+            <linearGradient id="pf0" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="rgb(255,69,0)"/><stop offset="50%" stop-color="rgb(255,140,0)"/><stop offset="100%" stop-color="rgb(255,196,0)"/></linearGradient>
+            <linearGradient id="pf1" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="rgb(255,74,0)"/><stop offset="50%" stop-color="rgb(255,148,0)"/><stop offset="100%" stop-color="rgb(255,200,0)"/></linearGradient>
+            <linearGradient id="pf2" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="rgb(255,80,0)"/><stop offset="50%" stop-color="rgb(255,155,0)"/><stop offset="100%" stop-color="rgb(255,203,0)"/></linearGradient>
+            <linearGradient id="pf3" x1="50%" y1="100%" x2="50%" y2="0%"><stop offset="0%" stop-color="rgb(255,88,0)"/><stop offset="50%" stop-color="rgb(255,166,0)"/><stop offset="100%" stop-color="rgb(255,209,0)"/></linearGradient>
+          </defs>
+          <ellipse cx="729.9" cy="747.3" rx="52.2" ry="87.0" fill="url(#pn0)" opacity="0.90" transform="rotate(140 729.9 747.3)"/>
+          <ellipse cx="572.6" cy="816.6" rx="55.4" ry="92.3" fill="url(#pn1)" opacity="0.95" transform="rotate(172.5 572.6 816.6)"/>
+          <ellipse cx="402.7" cy="790.4" rx="58.1" ry="96.9" fill="url(#pn2)" opacity="0.90" transform="rotate(205 402.7 790.4)"/>
+          <ellipse cx="273.4" cy="677.1" rx="60.2" ry="100.3" fill="url(#pn3)" opacity="0.95" transform="rotate(237.5 273.4 677.1)"/>
+          <ellipse cx="225.3" cy="512.0" rx="61.3" ry="102.2" fill="url(#pn4)" opacity="0.90" transform="rotate(270 225.3 512.0)"/>
+          <ellipse cx="273.4" cy="346.9" rx="61.3" ry="102.2" fill="url(#pn5)" opacity="0.95" transform="rotate(302.5 273.4 346.9)"/>
+          <ellipse cx="402.7" cy="233.6" rx="60.2" ry="100.3" fill="url(#pn6)" opacity="0.90" transform="rotate(335 402.7 233.6)"/>
+          <ellipse cx="572.6" cy="207.4" rx="58.1" ry="96.9" fill="url(#pn7)" opacity="0.95" transform="rotate(367.5 572.6 207.4)"/>
+          <ellipse cx="729.9" cy="276.7" rx="55.4" ry="92.3" fill="url(#pn8)" opacity="0.90" transform="rotate(400 729.9 276.7)"/>
+          <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#pf0)" opacity="0.95" transform="rotate(0 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#pf1)" opacity="0.95" transform="rotate(90 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#pf2)" opacity="0.95" transform="rotate(180 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#pf3)" opacity="0.95" transform="rotate(270 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(45 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(135 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(225 532.5 512.0)"/>
+          <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(315 532.5 512.0)"/>
+          <circle cx="532.5" cy="512.0" r="30.7" fill="#FF4500"/>
+          <circle cx="532.5" cy="512.0" r="18.4" fill="#FFD700"/>
+          <circle cx="532.5" cy="512.0" r="8.2" fill="white"/>
+        </svg>
+        <span>CONFIDDO</span>
+      </a>
+      <a href="/" class="nav-back">Back to Home</a>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <section class="policy-header">
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="effective-date">Effective Date: February 22, 2026</p>
+    </div>
+  </section>
+
+  <!-- BODY -->
+  <section class="policy-body">
+    <div class="container">
+      <div class="policy-content">
+
+        <div class="highlight-box">
+          <p><strong>In short:</strong> Confiddo is built for students, teachers, parents, and principals. We collect only what's needed to deliver the learning experience, we never sell your data, and students' information is always protected.</p>
+        </div>
+
+        <h2>1. Who We Are</h2>
+        <p>Confiddo ("we", "our", "us") is an education technology platform designed to help students build academic confidence through personalized practice, growth tracking, and collaborative support from teachers, parents, and principals. The app is operated by Confiddo, based in India.</p>
+        <p>For questions about this policy, contact us at <a href="mailto:hello@confiddo.in">hello@confiddo.in</a>.</p>
+
+        <h2>2. Information We Collect</h2>
+
+        <h3>2.1 Account Information</h3>
+        <p>When you create an account, we collect:</p>
+        <ul>
+          <li><strong>Students:</strong> Name, class/grade, school, email or phone number (provided by teacher or parent)</li>
+          <li><strong>Teachers:</strong> Name, email, phone number, school, subjects taught</li>
+          <li><strong>Parents:</strong> Name, email, phone number, relationship to student</li>
+          <li><strong>Principals:</strong> Name, email, phone number, school</li>
+        </ul>
+
+        <h3>2.2 Learning & Performance Data</h3>
+        <p>As students use the app, we collect:</p>
+        <ul>
+          <li>Practice session responses (answers selected, time taken per question)</li>
+          <li>Test scores, accuracy rates, and completion data</li>
+          <li>Confidence metrics (Readiness, Growth, Confidence pillar scores)</li>
+          <li>Streak data, XP points, and achievement progress</li>
+          <li>Question-level analytics (skipped questions, difficulty patterns)</li>
+        </ul>
+
+        <h3>2.3 Device & Technical Data</h3>
+        <ul>
+          <li>Device type, operating system, and app version</li>
+          <li>Push notification tokens (FCM tokens for delivering notifications)</li>
+          <li>Crash logs and performance diagnostics</li>
+        </ul>
+
+        <h3>2.4 Data We Do NOT Collect</h3>
+        <ul>
+          <li>Location data or GPS coordinates</li>
+          <li>Photos, contacts, or files from your device</li>
+          <li>Browsing history outside the app</li>
+          <li>Financial or payment information (the app is currently free)</li>
+        </ul>
+
+        <h2>3. How We Use Your Information</h2>
+        <p>We use the collected data to:</p>
+        <ul>
+          <li><strong>Deliver personalized practice:</strong> Adaptive difficulty, question selection based on performance, and targeted recommendations</li>
+          <li><strong>Track and display progress:</strong> Readiness scores, growth trends, confidence metrics, streaks, and achievements</li>
+          <li><strong>Enable teacher insights:</strong> Class-level analytics, student performance reports, and practice assignment management</li>
+          <li><strong>Support parent involvement:</strong> Weekly progress summaries, milestone notifications, and child performance overview</li>
+          <li><strong>Provide principal dashboards:</strong> School-wide analytics, teacher activity reports, and class comparisons</li>
+          <li><strong>Send notifications:</strong> Practice reminders, achievement alerts, deadline reminders, and progress updates</li>
+          <li><strong>Improve the app:</strong> Aggregate analytics to enhance question quality, difficulty calibration, and feature design</li>
+        </ul>
+
+        <h2>4. How We Share Information</h2>
+
+        <div class="highlight-box">
+          <p><strong>We never sell, rent, or trade personal data to third parties for advertising or marketing purposes.</strong></p>
+        </div>
+
+        <p>Information is shared only within the educational context:</p>
+        <ul>
+          <li><strong>Teachers</strong> can see performance data for students in their assigned classes</li>
+          <li><strong>Parents</strong> can see their linked child's progress, scores, and activity</li>
+          <li><strong>Principals</strong> can see aggregated class-level and teacher-level analytics for their school</li>
+          <li><strong>Students</strong> can only see their own data — never other students' performance</li>
+        </ul>
+
+        <h3>4.1 Third-Party Services</h3>
+        <p>We use the following third-party services to operate the app:</p>
+        <ul>
+          <li><strong>Firebase Cloud Messaging (Google):</strong> For delivering push notifications to your device</li>
+          <li><strong>Cloud hosting providers:</strong> For securely storing and serving application data</li>
+        </ul>
+        <p>These services process data only as needed to provide their functionality and are bound by their own privacy policies.</p>
+
+        <h2>5. Data Storage & Security</h2>
+        <ul>
+          <li>All data is stored in secure PostgreSQL databases with encrypted connections</li>
+          <li>Authentication uses JWT (JSON Web Tokens) with secure token handling</li>
+          <li>API communications are encrypted via HTTPS/TLS</li>
+          <li>Database access is restricted to authorized application services only</li>
+          <li>We do not store passwords in plain text — all passwords are securely hashed</li>
+        </ul>
+
+        <h2>6. Children's Privacy</h2>
+        <p>Confiddo is designed for school students, which may include children under 13. We take children's privacy seriously:</p>
+        <ul>
+          <li>Student accounts are created by or under the supervision of teachers or parents</li>
+          <li>We collect only the minimum data necessary for the educational experience</li>
+          <li>Students cannot publicly share or expose their data outside the app</li>
+          <li>We do not serve advertisements to any users, including children</li>
+          <li>We do not use student data for any purpose other than delivering the educational service</li>
+          <li>Parents and teachers can request access to, correction of, or deletion of a child's data at any time</li>
+        </ul>
+
+        <h2>7. Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li><strong>Access:</strong> Request a copy of the personal data we hold about you or your child</li>
+          <li><strong>Correction:</strong> Ask us to correct inaccurate or incomplete information</li>
+          <li><strong>Deletion:</strong> Request deletion of your account and associated data</li>
+          <li><strong>Data Portability:</strong> Request your data in a machine-readable format</li>
+          <li><strong>Withdraw Consent:</strong> Opt out of push notifications at any time via app or device settings</li>
+        </ul>
+        <p>To exercise any of these rights, email us at <a href="mailto:hello@confiddo.in">hello@confiddo.in</a>.</p>
+
+        <h2>8. Data Retention</h2>
+        <p>We retain your data for as long as your account is active. If you request account deletion:</p>
+        <ul>
+          <li>Personal identifiers (name, email, phone) are deleted within 30 days</li>
+          <li>Anonymized, aggregated analytics data may be retained to improve the platform</li>
+          <li>Backup copies are purged within 90 days of deletion request</li>
+        </ul>
+
+        <h2>9. Push Notifications</h2>
+        <p>Confiddo sends push notifications for:</p>
+        <ul>
+          <li>Practice assignments and deadline reminders</li>
+          <li>Achievement milestones and streak updates</li>
+          <li>Weekly progress summaries (for parents)</li>
+          <li>Class analysis reports (for teachers and principals)</li>
+        </ul>
+        <p>You can disable push notifications at any time through your device's notification settings. Disabling notifications does not affect your ability to use the app.</p>
+
+        <h2>10. Cookies & Tracking</h2>
+        <p>The Confiddo mobile app does not use cookies. Our website (confiddo.in) does not use tracking cookies or third-party analytics. We do not participate in any ad tracking networks.</p>
+
+        <h2>11. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. When we make changes:</p>
+        <ul>
+          <li>The "Effective Date" at the top will be updated</li>
+          <li>Significant changes will be communicated via in-app notification</li>
+          <li>Continued use of the app after changes constitutes acceptance of the updated policy</li>
+        </ul>
+
+        <h2>12. Contact Us</h2>
+        <p>If you have questions, concerns, or requests regarding this Privacy Policy or your data, reach out to us:</p>
+        <ul>
+          <li><strong>Email:</strong> <a href="mailto:hello@confiddo.in">hello@confiddo.in</a></li>
+          <li><strong>Website:</strong> <a href="https://confiddo.in">confiddo.in</a></li>
+        </ul>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Confiddo. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="mailto:hello@confiddo.in">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>
