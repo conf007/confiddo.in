@@ -193,10 +193,16 @@
     }
 
     .hero-logo {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       margin: 0 auto 32px;
       animation: float 6s ease-in-out infinite;
+    }
+
+    .hero-logo svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.08));
     }
 
     @keyframes float {
@@ -748,7 +754,8 @@
     <div class="container">
       <!-- Logo -->
       <div class="hero-logo">
-        <svg viewBox="0 0 200 200" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="196" height="196" rx="44" fill="white"/>
           <ellipse cx="142.6" cy="54" rx="11.4" ry="19" fill="#2563EB" opacity="0.9" transform="rotate(140 142.6 54)"/>
           <ellipse cx="163.5" cy="66.5" rx="10.8" ry="18" fill="#3B73EC" opacity="0.95" transform="rotate(172.5 163.5 66.5)"/>
           <ellipse cx="168.5" cy="88" rx="11.4" ry="19" fill="#5B83EB" opacity="0.9" transform="rotate(205 168.5 88)"/>
