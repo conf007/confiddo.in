@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="32" height="32">
+  <defs>
+    <linearGradient id="fv0" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="30%" stop-color="rgb(70,100,200)"/>
+      <stop offset="100%" stop-color="rgb(37,99,235)"/>
+    </linearGradient>
+    <linearGradient id="fv1" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="34%" stop-color="rgb(89,101,179)"/>
+      <stop offset="100%" stop-color="rgb(64,100,206)"/>
+    </linearGradient>
+    <linearGradient id="fv2" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="39%" stop-color="rgb(108,102,159)"/>
+      <stop offset="100%" stop-color="rgb(92,101,176)"/>
+    </linearGradient>
+    <linearGradient id="fv3" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="43%" stop-color="rgb(127,102,138)"/>
+      <stop offset="100%" stop-color="rgb(119,102,147)"/>
+    </linearGradient>
+    <linearGradient id="fv4" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="48%" stop-color="rgb(146,103,118)"/>
+      <stop offset="100%" stop-color="rgb(146,103,118)"/>
+    </linearGradient>
+    <linearGradient id="fv5" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="52%" stop-color="rgb(165,104,97)"/>
+      <stop offset="100%" stop-color="rgb(173,104,88)"/>
+    </linearGradient>
+    <linearGradient id="fv6" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="56%" stop-color="rgb(184,104,76)"/>
+      <stop offset="100%" stop-color="rgb(201,105,59)"/>
+    </linearGradient>
+    <linearGradient id="fv7" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="61%" stop-color="rgb(203,105,56)"/>
+      <stop offset="100%" stop-color="rgb(228,106,29)"/>
+    </linearGradient>
+    <linearGradient id="fv8" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="65%" stop-color="rgb(222,106,35)"/>
+      <stop offset="100%" stop-color="rgb(255,107,0)"/>
+    </linearGradient>
+    <linearGradient id="ff0" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,69,0)"/>
+      <stop offset="50%" stop-color="rgb(255,140,0)"/>
+      <stop offset="100%" stop-color="rgb(255,196,0)"/>
+    </linearGradient>
+    <linearGradient id="ff1" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,72,0)"/>
+      <stop offset="50%" stop-color="rgb(255,144,0)"/>
+      <stop offset="100%" stop-color="rgb(255,198,0)"/>
+    </linearGradient>
+    <linearGradient id="ff2" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,74,0)"/>
+      <stop offset="50%" stop-color="rgb(255,148,0)"/>
+      <stop offset="100%" stop-color="rgb(255,200,0)"/>
+    </linearGradient>
+    <linearGradient id="ff3" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,77,0)"/>
+      <stop offset="50%" stop-color="rgb(255,151,0)"/>
+      <stop offset="100%" stop-color="rgb(255,202,0)"/>
+    </linearGradient>
+    <linearGradient id="ff4" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,80,0)"/>
+      <stop offset="50%" stop-color="rgb(255,155,0)"/>
+      <stop offset="100%" stop-color="rgb(255,203,0)"/>
+    </linearGradient>
+    <linearGradient id="ff5" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,83,0)"/>
+      <stop offset="50%" stop-color="rgb(255,159,0)"/>
+      <stop offset="100%" stop-color="rgb(255,205,0)"/>
+    </linearGradient>
+    <linearGradient id="ff6" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,85,0)"/>
+      <stop offset="50%" stop-color="rgb(255,163,0)"/>
+      <stop offset="100%" stop-color="rgb(255,207,0)"/>
+    </linearGradient>
+    <linearGradient id="ff7" x1="50%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="rgb(255,88,0)"/>
+      <stop offset="50%" stop-color="rgb(255,166,0)"/>
+      <stop offset="100%" stop-color="rgb(255,209,0)"/>
+    </linearGradient>
+  </defs>
+  <rect x="10.2" y="10.2" width="1003.5" height="1003.5" rx="225.3" fill="white"/>
+  <ellipse cx="729.9" cy="747.3" rx="52.2" ry="87.0" fill="url(#fv0)" opacity="0.90" transform="rotate(140 729.9 747.3)"/>
+  <ellipse cx="572.6" cy="816.6" rx="55.4" ry="92.3" fill="url(#fv1)" opacity="0.95" transform="rotate(172.5 572.6 816.6)"/>
+  <ellipse cx="402.7" cy="790.4" rx="58.1" ry="96.9" fill="url(#fv2)" opacity="0.90" transform="rotate(205 402.7 790.4)"/>
+  <ellipse cx="273.4" cy="677.1" rx="60.2" ry="100.3" fill="url(#fv3)" opacity="0.95" transform="rotate(237.5 273.4 677.1)"/>
+  <ellipse cx="225.3" cy="512.0" rx="61.3" ry="102.2" fill="url(#fv4)" opacity="0.90" transform="rotate(270 225.3 512.0)"/>
+  <ellipse cx="273.4" cy="346.9" rx="61.3" ry="102.2" fill="url(#fv5)" opacity="0.95" transform="rotate(302.5 273.4 346.9)"/>
+  <ellipse cx="402.7" cy="233.6" rx="60.2" ry="100.3" fill="url(#fv6)" opacity="0.90" transform="rotate(335 402.7 233.6)"/>
+  <ellipse cx="572.6" cy="207.4" rx="58.1" ry="96.9" fill="url(#fv7)" opacity="0.95" transform="rotate(367.5 572.6 207.4)"/>
+  <ellipse cx="729.9" cy="276.7" rx="55.4" ry="92.3" fill="url(#fv8)" opacity="0.90" transform="rotate(400 729.9 276.7)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff0)" opacity="0.95" transform="rotate(0 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff1)" opacity="0.95" transform="rotate(45 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff2)" opacity="0.95" transform="rotate(90 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff3)" opacity="0.95" transform="rotate(135 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff4)" opacity="0.95" transform="rotate(180 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff5)" opacity="0.95" transform="rotate(225 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff6)" opacity="0.95" transform="rotate(270 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="445.4" rx="32.8" ry="66.6" fill="url(#ff7)" opacity="0.95" transform="rotate(315 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(22.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(67.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(112.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(157.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(202.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(247.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(292.5 532.5 512.0)"/>
+  <ellipse cx="532.5" cy="471.0" rx="22.5" ry="41.0" fill="#FFD700" opacity="0.75" transform="rotate(337.5 532.5 512.0)"/>
+  <circle cx="532.5" cy="512.0" r="30.7" fill="#FF4500"/>
+  <circle cx="532.5" cy="512.0" r="18.4" fill="#FFD700"/>
+  <circle cx="532.5" cy="512.0" r="8.2" fill="white"/>
+</svg>
