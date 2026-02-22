@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confiddo — Confidence Builds Readiness</title>
+  <meta name="description" content="Confiddo helps students build real confidence — not just chase marks. Practice at your own pace, track growth, and get support from teachers and parents.">
+  <meta name="theme-color" content="#0F172A">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Confiddo — Confidence Builds Readiness">
+  <meta property="og:description" content="The learning app that builds confidence, not pressure. For students, teachers, parents & principals.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://confiddo.in">
+
+  <!-- Favicon (inline SVG) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><rect x='2' y='2' width='196' height='196' rx='44' fill='white'/><ellipse cx='142.6' cy='54' rx='11.4' ry='19' fill='%232563EB' opacity='0.9' transform='rotate(140 142.6 54)'/><ellipse cx='163.5' cy='66.5' rx='10.8' ry='18' fill='%233B73EC' opacity='0.95' transform='rotate(172.5 163.5 66.5)'/><ellipse cx='168.5' cy='88' rx='11.4' ry='19' fill='%235B83EB' opacity='0.9' transform='rotate(205 168.5 88)'/><ellipse cx='158' cy='112' rx='10.8' ry='18' fill='%237F93E9' opacity='0.95' transform='rotate(237.5 158 112)'/><ellipse cx='134' cy='130' rx='11.4' ry='19' fill='%23A7A0DD' opacity='0.9' transform='rotate(270 134 130)'/><ellipse cx='102' cy='137' rx='10.8' ry='18' fill='%23C99EB6' opacity='0.95' transform='rotate(302.5 102 137)'/><ellipse cx='68' cy='128' rx='11.4' ry='19' fill='%23E0897E' opacity='0.9' transform='rotate(335 68 128)'/><ellipse cx='46' cy='108' rx='10.8' ry='18' fill='%23EF7942' opacity='0.95' transform='rotate(7.5 46 108)'/><ellipse cx='40' cy='82' rx='11.4' ry='19' fill='%23FF6B00' opacity='0.9' transform='rotate(40 40 82)'/><circle cx='104' cy='100' r='6' fill='%23FF4500'/><circle cx='104' cy='100' r='3.6' fill='%23FFD700'/><circle cx='104' cy='100' r='1.6' fill='white'/></svg>">
+
+  <style>
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --slate-900: #0F172A;
+      --slate-800: #1E293B;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748B;
+      --slate-400: #94A3B8;
+      --slate-200: #E2E8F0;
+      --slate-100: #F1F5F9;
+      --slate-50:  #F8FAFC;
+      --blue:      #2563EB;
+      --blue-light:#3B82F6;
+      --blue-tint: #EFF6FF;
+      --orange:    #FF6B00;
+      --orange-light: #FF8533;
+      --orange-tint: #FFF7ED;
+      --green:     #16A34A;
+      --green-tint: #F0FDF4;
+      --gold:      #FFB800;
+      --gold-tint: #FFFBEB;
+      --white:     #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--slate-800);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       UTILITIES
+       ============================================================ */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: var(--slate-500);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       NAV
+       ============================================================ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-brand svg { width: 36px; height: 36px; }
+
+    .nav-brand span {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--slate-900);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate-600);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--slate-900); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      background: var(--slate-900);
+      color: var(--white) !important;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .nav-cta:hover { background: var(--slate-700); }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .nav-toggle svg { width: 24px; height: 24px; color: var(--slate-700); }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      padding: 140px 0 80px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--white) 0%, var(--slate-50) 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(37,99,235,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 32px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 40%, var(--orange) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--slate-500);
+      max-width: 520px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .hero-tagline {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--slate-400);
+      margin-bottom: 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(255,107,0,0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--orange-light);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255,107,0,0.35);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--white);
+      color: var(--slate-700);
+      border: 1.5px solid var(--slate-200);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--slate-400);
+      background: var(--slate-50);
+    }
+
+    /* Roles badges under hero */
+    .hero-roles {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .role-badge.student { background: var(--orange-tint); color: var(--orange); }
+    .role-badge.teacher { background: var(--blue-tint); color: var(--blue); }
+    .role-badge.parent { background: var(--green-tint); color: var(--green); }
+    .role-badge.principal { background: var(--gold-tint); color: #B8860B; }
+
+    .role-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ============================================================
+       FEATURES
+       ============================================================ */
+    .features {
+      padding: 100px 0;
+      background: var(--white);
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .features-header .section-desc {
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      padding: 32px;
+      border-radius: 16px;
+      border: 1px solid var(--slate-200);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      border-color: transparent;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .feature-icon.blue { background: var(--blue-tint); }
+    .feature-icon.orange { background: var(--orange-tint); }
+    .feature-icon.green { background: var(--green-tint); }
+    .feature-icon.gold { background: var(--gold-tint); }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 15px;
+      color: var(--slate-500);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       HOW IT WORKS (Roles)
+       ============================================================ */
+    .roles {
+      padding: 100px 0;
+      background: var(--slate-50);
+    }
+
+    .roles-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .roles-header .section-desc { margin: 0 auto; }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .role-card {
+      background: var(--white);
+      padding: 32px 28px;
+      border-radius: 16px;
+      text-align: center;
+      border: 1px solid var(--slate-200);
+      transition: all 0.3s;
+    }
+
+    .role-card:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
+    }
+
+    .role-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+    }
+
+    .role-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 8px;
+    }
+
+    .role-card p {
+      font-size: 14px;
+      color: var(--slate-500);
+      line-height: 1.6;
+    }
+
+    .role-features {
+      margin-top: 16px;
+      text-align: left;
+      list-style: none;
+    }
+
+    .role-features li {
+      font-size: 13px;
+      color: var(--slate-600);
+      padding: 4px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .role-features li::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    .role-card.student .role-features li::before { background: var(--orange); }
+    .role-card.teacher .role-features li::before { background: var(--blue); }
+    .role-card.parent .role-features li::before { background: var(--green); }
+    .role-card.principal .role-features li::before { background: var(--gold); }
+
+    /* ============================================================
+       VALUES / PHILOSOPHY
+       ============================================================ */
+    .philosophy {
+      padding: 100px 0;
+      background: var(--white);
+    }
+
+    .philosophy-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .philosophy-header .section-desc { margin: 0 auto; }
+
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    .philosophy-card {
+      padding: 36px;
+      border-radius: 16px;
+      position: relative;
+    }
+
+    .philosophy-card.blue-bg { background: var(--blue-tint); }
+    .philosophy-card.orange-bg { background: var(--orange-tint); }
+    .philosophy-card.green-bg { background: var(--green-tint); }
+
+    .philosophy-card .emoji {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .philosophy-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 10px;
+    }
+
+    .philosophy-card p {
+      font-size: 15px;
+      color: var(--slate-600);
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       CTA SECTION
+       ============================================================ */
+    .cta {
+      padding: 100px 0;
+      background: var(--slate-900);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255,107,0,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta h2 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .cta p {
+      font-size: 17px;
+      color: var(--slate-400);
+      max-width: 480px;
+      margin: 0 auto 36px;
+      position: relative;
+    }
+
+    .cta .btn-primary {
+      position: relative;
+      font-size: 17px;
+      padding: 16px 36px;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      padding: 48px 0;
+      background: var(--slate-900);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-brand svg { width: 28px; height: 28px; }
+
+    .footer-brand span {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--slate-400);
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--slate-500);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--slate-500);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--slate-300); }
+
+    /* ============================================================
+       MOBILE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-toggle { display: block; }
+
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        padding: 24px;
+        gap: 20px;
+        border-bottom: 1px solid var(--slate-200);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      }
+
+      .hero { padding: 120px 0 60px; }
+
+      .hero-sub { font-size: 16px; }
+
+      .hero-actions { flex-direction: column; align-items: center; }
+
+      .features-grid,
+      .roles-grid,
+      .philosophy-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* ============================================================
+       ANIMATIONS (scroll-triggered via IntersectionObserver)
+       ============================================================ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="nav-brand">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="196" height="196" rx="44" fill="white"/>
+          <ellipse cx="142.6" cy="54" rx="11.4" ry="19" fill="#2563EB" opacity="0.9" transform="rotate(140 142.6 54)"/>
+          <ellipse cx="163.5" cy="66.5" rx="10.8" ry="18" fill="#3B73EC" opacity="0.95" transform="rotate(172.5 163.5 66.5)"/>
+          <ellipse cx="168.5" cy="88" rx="11.4" ry="19" fill="#5B83EB" opacity="0.9" transform="rotate(205 168.5 88)"/>
+          <ellipse cx="158" cy="112" rx="10.8" ry="18" fill="#7F93E9" opacity="0.95" transform="rotate(237.5 158 112)"/>
+          <ellipse cx="134" cy="130" rx="11.4" ry="19" fill="#A7A0DD" opacity="0.9" transform="rotate(270 134 130)"/>
+          <ellipse cx="102" cy="137" rx="10.8" ry="18" fill="#C99EB6" opacity="0.95" transform="rotate(302.5 102 137)"/>
+          <ellipse cx="68" cy="128" rx="11.4" ry="19" fill="#E0897E" opacity="0.9" transform="rotate(335 68 128)"/>
+          <ellipse cx="46" cy="108" rx="10.8" ry="18" fill="#EF7942" opacity="0.95" transform="rotate(7.5 46 108)"/>
+          <ellipse cx="40" cy="82" rx="11.4" ry="19" fill="#FF6B00" opacity="0.9" transform="rotate(40 40 82)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF4500" opacity="0.95" transform="rotate(0 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF5500" opacity="0.95" transform="rotate(45 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF6500" opacity="0.95" transform="rotate(90 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF7500" opacity="0.95" transform="rotate(135 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF8500" opacity="0.95" transform="rotate(180 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF9500" opacity="0.95" transform="rotate(225 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FFA500" opacity="0.95" transform="rotate(270 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FFB800" opacity="0.95" transform="rotate(315 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(22.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(67.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(112.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(157.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(202.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(247.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(292.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(337.5 104 100)"/>
+          <circle cx="104" cy="100" r="6" fill="#FF4500"/>
+          <circle cx="104" cy="100" r="3.6" fill="#FFD700"/>
+          <circle cx="104" cy="100" r="1.6" fill="white"/>
+        </svg>
+        <span>CONFIDDO</span>
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#roles">Who It's For</a></li>
+        <li><a href="#philosophy">Our Approach</a></li>
+        <li><a href="#cta" class="nav-cta">Get Early Access</a></li>
+      </ul>
+
+      <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <!-- Logo -->
+      <div class="hero-logo">
+        <svg viewBox="0 0 200 200" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="142.6" cy="54" rx="11.4" ry="19" fill="#2563EB" opacity="0.9" transform="rotate(140 142.6 54)"/>
+          <ellipse cx="163.5" cy="66.5" rx="10.8" ry="18" fill="#3B73EC" opacity="0.95" transform="rotate(172.5 163.5 66.5)"/>
+          <ellipse cx="168.5" cy="88" rx="11.4" ry="19" fill="#5B83EB" opacity="0.9" transform="rotate(205 168.5 88)"/>
+          <ellipse cx="158" cy="112" rx="10.8" ry="18" fill="#7F93E9" opacity="0.95" transform="rotate(237.5 158 112)"/>
+          <ellipse cx="134" cy="130" rx="11.4" ry="19" fill="#A7A0DD" opacity="0.9" transform="rotate(270 134 130)"/>
+          <ellipse cx="102" cy="137" rx="10.8" ry="18" fill="#C99EB6" opacity="0.95" transform="rotate(302.5 102 137)"/>
+          <ellipse cx="68" cy="128" rx="11.4" ry="19" fill="#E0897E" opacity="0.9" transform="rotate(335 68 128)"/>
+          <ellipse cx="46" cy="108" rx="10.8" ry="18" fill="#EF7942" opacity="0.95" transform="rotate(7.5 46 108)"/>
+          <ellipse cx="40" cy="82" rx="11.4" ry="19" fill="#FF6B00" opacity="0.9" transform="rotate(40 40 82)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF4500" opacity="0.95" transform="rotate(0 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF5500" opacity="0.95" transform="rotate(45 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF6500" opacity="0.95" transform="rotate(90 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF7500" opacity="0.95" transform="rotate(135 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF8500" opacity="0.95" transform="rotate(180 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FF9500" opacity="0.95" transform="rotate(225 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FFA500" opacity="0.95" transform="rotate(270 104 100)"/>
+          <ellipse cx="104" cy="87" rx="6.4" ry="13" fill="#FFB800" opacity="0.95" transform="rotate(315 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(22.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(67.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(112.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(157.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(202.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(247.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(292.5 104 100)"/>
+          <ellipse cx="104" cy="92" rx="4.4" ry="8" fill="#FFD700" opacity="0.75" transform="rotate(337.5 104 100)"/>
+          <circle cx="104" cy="100" r="6" fill="#FF4500"/>
+          <circle cx="104" cy="100" r="3.6" fill="#FFD700"/>
+          <circle cx="104" cy="100" r="1.6" fill="white"/>
+        </svg>
+      </div>
+
+      <p class="hero-tagline">CONFIDENCE BUILDS READINESS</p>
+
+      <h1>
+        Build <span class="gradient-text">Real Confidence</span><br>
+        Not Just Marks
+      </h1>
+
+      <p class="hero-sub">
+        Confiddo is a learning companion for students that replaces pressure with practice,
+        scores with growth, and judgment with support.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#cta" class="btn-primary">
+          Get Early Access
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+        </a>
+        <a href="#features" class="btn-secondary">
+          See How It Works
+        </a>
+      </div>
+
+      <div class="hero-roles">
+        <span class="role-badge student"><span class="role-dot"></span> Students</span>
+        <span class="role-badge teacher"><span class="role-dot"></span> Teachers</span>
+        <span class="role-badge parent"><span class="role-dot"></span> Parents</span>
+        <span class="role-badge principal"><span class="role-dot"></span> Principals</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURES
+       ============================================================ -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header">
+        <p class="section-label">Features</p>
+        <h2 class="section-title">This Isn't Another Test App</h2>
+        <p class="section-desc">
+          Confiddo helps you practice, learn from hints, reattempt without penalty,
+          and watch your confidence grow over time.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card fade-up">
+          <div class="feature-icon blue">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#2563EB" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <h3>Hints, Not Answers</h3>
+          <p>Stuck on a question? Use hints to learn the approach. Every hint teaches a concept, not just gives an answer.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon orange">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#FF6B00" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          <h3>Reattempt Without Penalty</h3>
+          <p>Got it wrong? Try again. Every attempt makes you stronger. No scores, no judgment — just learning.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon green">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#16A34A" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          </div>
+          <h3>Watch Yourself Grow</h3>
+          <p>Track your streaks, earn stars, collect characters. See your confidence grow — compared only to yourself.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon gold">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#B8860B" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+          </div>
+          <h3>Effort Over Marks</h3>
+          <p>Teachers and parents see your effort and growth — never your mistakes. They're here to support you.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon blue">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#2563EB" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <h3>Smart Notifications</h3>
+          <p>Push notifications keep everyone in the loop. New tests, deadlines, results — right on your phone.</p>
+        </div>
+
+        <div class="feature-card fade-up">
+          <div class="feature-icon orange">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#FF6B00" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3>Safe & Private</h3>
+          <p>Student data stays protected. No public leaderboards, no peer comparison. A safe space to learn.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ROLES
+       ============================================================ -->
+  <section class="roles" id="roles">
+    <div class="container">
+      <div class="roles-header">
+        <p class="section-label">Built for Everyone</p>
+        <h2 class="section-title">Your Team Is Cheering You On</h2>
+        <p class="section-desc">
+          Confiddo connects students, teachers, parents, and principals — everyone working together for the student's growth.
+        </p>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card student fade-up">
+          <div class="role-avatar" style="background: var(--orange-tint);">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#FF6B00" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.331 0 4.466.89 6.042 2.346M12 6.042a8.967 8.967 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.346m0-14.304v14.304"/></svg>
+          </div>
+          <h3>Students</h3>
+          <p>Practice at your own pace without pressure</p>
+          <ul class="role-features">
+            <li>Attempt tests with hints and reattempts</li>
+            <li>Track streaks, stars, and characters</li>
+            <li>See your confidence grow over time</li>
+            <li>No scores visible to peers</li>
+          </ul>
+        </div>
+
+        <div class="role-card teacher fade-up">
+          <div class="role-avatar" style="background: var(--blue-tint);">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#2563EB" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+          </div>
+          <h3>Teachers</h3>
+          <p>Create tests, review, and support each student</p>
+          <ul class="role-features">
+            <li>Create and publish practice tests</li>
+            <li>Review student responses in detail</li>
+            <li>Get notified when all students finish</li>
+            <li>Identify students who need attention</li>
+          </ul>
+        </div>
+
+        <div class="role-card parent fade-up">
+          <div class="role-avatar" style="background: var(--green-tint);">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#16A34A" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+          <h3>Parents</h3>
+          <p>Stay connected to your child's growth</p>
+          <ul class="role-features">
+            <li>See effort and growth, not just marks</li>
+            <li>Get notified when analysis is ready</li>
+            <li>Track confidence trends over time</li>
+            <li>Support without adding pressure</li>
+          </ul>
+        </div>
+
+        <div class="role-card principal fade-up">
+          <div class="role-avatar" style="background: var(--gold-tint);">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#B8860B" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+          </div>
+          <h3>Principals</h3>
+          <p>Bird's-eye view of the entire school</p>
+          <ul class="role-features">
+            <li>Assign teachers to classes</li>
+            <li>View class-level analytics</li>
+            <li>Track teacher engagement</li>
+            <li>School-wide performance reports</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PHILOSOPHY
+       ============================================================ -->
+  <section class="philosophy" id="philosophy">
+    <div class="container">
+      <div class="philosophy-header">
+        <p class="section-label">Our Approach</p>
+        <h2 class="section-title">Practice That Feels Different</h2>
+        <p class="section-desc">
+          We believe confidence comes from effort, not comparison. Here's what makes Confiddo different.
+        </p>
+      </div>
+
+      <div class="philosophy-grid">
+        <div class="philosophy-card blue-bg fade-up">
+          <span class="emoji" role="img" aria-label="shield">&#x1F6E1;&#xFE0F;</span>
+          <h3>No Public Scores</h3>
+          <p>We don't display marks or rankings. Students see their own growth trajectory — never compared to classmates. Learning happens best without the fear of being judged.</p>
+        </div>
+
+        <div class="philosophy-card orange-bg fade-up">
+          <span class="emoji" role="img" aria-label="plant">&#x1F331;</span>
+          <h3>Growth Over Grades</h3>
+          <p>Our three pillars — Readiness, Growth, and Confidence — measure how a student develops over time. It's not about one test; it's about the journey.</p>
+        </div>
+
+        <div class="philosophy-card green-bg fade-up">
+          <span class="emoji" role="img" aria-label="handshake">&#x1F91D;</span>
+          <h3>A Team Effort</h3>
+          <p>Students, teachers, parents, and principals — all on one platform, all working toward the same goal: helping every child believe in themselves.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CTA
+       ============================================================ -->
+  <section class="cta" id="cta">
+    <div class="container">
+      <h2>Ready to Build Confidence?</h2>
+      <p>
+        Confiddo is launching soon. Be among the first schools to transform how students learn and grow.
+      </p>
+      <a href="mailto:hello@confiddo.in" class="btn-primary">
+        Get in Touch
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="142.6" cy="54" rx="11.4" ry="19" fill="#2563EB" opacity="0.5" transform="rotate(140 142.6 54)"/>
+          <ellipse cx="163.5" cy="66.5" rx="10.8" ry="18" fill="#3B73EC" opacity="0.5" transform="rotate(172.5 163.5 66.5)"/>
+          <ellipse cx="168.5" cy="88" rx="11.4" ry="19" fill="#5B83EB" opacity="0.5" transform="rotate(205 168.5 88)"/>
+          <ellipse cx="158" cy="112" rx="10.8" ry="18" fill="#7F93E9" opacity="0.5" transform="rotate(237.5 158 112)"/>
+          <ellipse cx="134" cy="130" rx="11.4" ry="19" fill="#A7A0DD" opacity="0.5" transform="rotate(270 134 130)"/>
+          <ellipse cx="102" cy="137" rx="10.8" ry="18" fill="#C99EB6" opacity="0.5" transform="rotate(302.5 102 137)"/>
+          <ellipse cx="68" cy="128" rx="11.4" ry="19" fill="#E0897E" opacity="0.5" transform="rotate(335 68 128)"/>
+          <ellipse cx="46" cy="108" rx="10.8" ry="18" fill="#EF7942" opacity="0.5" transform="rotate(7.5 46 108)"/>
+          <ellipse cx="40" cy="82" rx="11.4" ry="19" fill="#FF6B00" opacity="0.5" transform="rotate(40 40 82)"/>
+          <circle cx="104" cy="100" r="6" fill="#FF4500" opacity="0.5"/>
+          <circle cx="104" cy="100" r="3.6" fill="#FFD700" opacity="0.5"/>
+        </svg>
+        <span>CONFIDDO</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 Confiddo. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="mailto:hello@confiddo.in">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCROLL ANIMATION
+       ============================================================ -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>
