@@ -12,10 +12,6 @@ import { ParentRegisterPage } from '../pages/auth/ParentRegisterPage'
 import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage'
 import { ForgotUsernamePage } from '../pages/auth/ForgotUsernamePage'
 import { FirstLoginPage } from '../pages/auth/FirstLoginPage'
-import {
-  ParentHomePage,
-  PrincipalHomePage,
-} from '../pages/dashboards'
 import { SectionPlaceholderPage } from '../pages/SectionPlaceholderPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { StudentHomePage } from '../pages/student/HomePage'
@@ -40,6 +36,39 @@ import { ReviewQueuePage } from '../pages/teacher/ReviewQueuePage'
 import { StudentDetailPage } from '../pages/teacher/StudentDetailPage'
 import { AnalyticsPage } from '../pages/teacher/AnalyticsPage'
 import { NotificationSettingsPage } from '../pages/teacher/NotificationSettingsPage'
+import { ParentRoot } from '../pages/parent/ParentRoot'
+import { ChildrenPage } from '../pages/parent/ChildrenPage'
+import { ChildOverviewPage } from '../pages/parent/ChildOverviewPage'
+import {
+  ActivityFeedPage,
+  EngagementPage,
+  GoalsPage,
+  StartersPage,
+} from '../pages/parent/ChildToolsPages'
+import {
+  AchievementsPage,
+  InsightsPage,
+  MonthlyReportPage,
+  PastSummariesPage,
+  ReadinessPage,
+  SummaryDetailPage,
+} from '../pages/parent/ChildMorePages'
+import { LinkChildPage } from '../pages/parent/LinkChildPage'
+import { DevicesPage } from '../pages/parent/DevicesPage'
+import { ExamGuidePage } from '../pages/parent/ExamGuidePage'
+import { ParentProfilePage } from '../pages/parent/ProfilePage'
+import { PrincipalDashboardPage } from '../pages/principal/DashboardPage'
+import { HeatmapPage } from '../pages/principal/HeatmapPage'
+import {
+  PrincipalClassDetailPage,
+  PrincipalClassesPage,
+} from '../pages/principal/ClassesPage'
+import { DirectoryPage, TeacherDetailPage } from '../pages/principal/DirectoryPage'
+import {
+  PrincipalStudentDetailPage,
+  StudentsPage,
+} from '../pages/principal/StudentsPage'
+import { PrincipalProfilePage } from '../pages/principal/ProfilePage'
 
 // Served under https://confiddo.in/app/ (vite base '/app/').
 export const router = createBrowserRouter(
@@ -113,8 +142,31 @@ export const router = createBrowserRouter(
         </RequireRole>
       ),
       children: [
-        { index: true, element: <ParentHomePage /> },
-        { path: '*', element: <SectionPlaceholderPage /> },
+        {
+          element: <ParentRoot />,
+          children: [
+            { index: true, element: <ChildrenPage /> },
+            { path: 'children/:childId', element: <ChildOverviewPage /> },
+            { path: 'children/:childId/activity', element: <ActivityFeedPage /> },
+            { path: 'children/:childId/engagement', element: <EngagementPage /> },
+            { path: 'children/:childId/starters', element: <StartersPage /> },
+            { path: 'children/:childId/goals', element: <GoalsPage /> },
+            { path: 'children/:childId/insights', element: <InsightsPage /> },
+            { path: 'children/:childId/monthly', element: <MonthlyReportPage /> },
+            { path: 'children/:childId/achievements', element: <AchievementsPage /> },
+            { path: 'children/:childId/readiness', element: <ReadinessPage /> },
+            { path: 'children/:childId/summaries', element: <PastSummariesPage /> },
+            {
+              path: 'children/:childId/summaries/:summaryId',
+              element: <SummaryDetailPage />,
+            },
+            { path: 'link-child', element: <LinkChildPage /> },
+            { path: 'devices', element: <DevicesPage /> },
+            { path: 'exam-guide', element: <ExamGuidePage /> },
+            { path: 'profile', element: <ParentProfilePage /> },
+            { path: '*', element: <SectionPlaceholderPage /> },
+          ],
+        },
       ],
     },
     {
@@ -125,7 +177,15 @@ export const router = createBrowserRouter(
         </RequireRole>
       ),
       children: [
-        { index: true, element: <PrincipalHomePage /> },
+        { index: true, element: <PrincipalDashboardPage /> },
+        { path: 'heatmap', element: <HeatmapPage /> },
+        { path: 'classes', element: <PrincipalClassesPage /> },
+        { path: 'classes/:classId', element: <PrincipalClassDetailPage /> },
+        { path: 'directory', element: <DirectoryPage /> },
+        { path: 'directory/:teacherId', element: <TeacherDetailPage /> },
+        { path: 'students', element: <StudentsPage /> },
+        { path: 'students/:studentId', element: <PrincipalStudentDetailPage /> },
+        { path: 'profile', element: <PrincipalProfilePage /> },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
     },

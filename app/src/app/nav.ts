@@ -47,6 +47,7 @@ export const TEACHER_NAV: NavItem[] = [
 export const PARENT_NAV: NavItem[] = [
   { to: '/parent', label: 'My Children', icon: 'users', end: true },
   { to: '/parent/link-child', label: 'Link a Child', icon: 'link' },
+  { to: '/parent/exam-guide', label: 'Exam Guide', icon: 'book' },
   { to: '/parent/devices', label: 'Devices', icon: 'device' },
   { to: '/parent/profile', label: 'Profile', icon: 'user' },
 ]
