@@ -12,6 +12,7 @@ import { ParentRegisterPage } from '../pages/auth/ParentRegisterPage'
 import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage'
 import { ForgotUsernamePage } from '../pages/auth/ForgotUsernamePage'
 import { FirstLoginPage } from '../pages/auth/FirstLoginPage'
+import { NotificationsPage } from '../pages/NotificationsPage'
 import { SectionPlaceholderPage } from '../pages/SectionPlaceholderPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { StudentHomePage } from '../pages/student/HomePage'
@@ -111,6 +112,7 @@ export const router = createBrowserRouter(
         { path: 'link-parent', element: <LinkParentPage /> },
         { path: 'profile', element: <StudentProfilePage /> },
         { path: 'xp-rules', element: <XpRulesPage /> },
+        { path: 'notifications', element: <NotificationsPage /> },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
     },
@@ -131,6 +133,7 @@ export const router = createBrowserRouter(
         { path: 'students/:studentId', element: <StudentDetailPage /> },
         { path: 'analytics', element: <AnalyticsPage /> },
         { path: 'settings', element: <NotificationSettingsPage /> },
+        { path: 'notifications', element: <NotificationsPage /> },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
     },
@@ -164,7 +167,8 @@ export const router = createBrowserRouter(
             { path: 'devices', element: <DevicesPage /> },
             { path: 'exam-guide', element: <ExamGuidePage /> },
             { path: 'profile', element: <ParentProfilePage /> },
-            { path: '*', element: <SectionPlaceholderPage /> },
+            { path: 'notifications', element: <NotificationsPage /> },
+        { path: '*', element: <SectionPlaceholderPage /> },
           ],
         },
       ],
@@ -186,6 +190,7 @@ export const router = createBrowserRouter(
         { path: 'students', element: <StudentsPage /> },
         { path: 'students/:studentId', element: <PrincipalStudentDetailPage /> },
         { path: 'profile', element: <PrincipalProfilePage /> },
+        { path: 'notifications', element: <NotificationsPage /> },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
     },

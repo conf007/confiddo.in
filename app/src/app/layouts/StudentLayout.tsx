@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { Icon } from '../../components/icons'
 import { Logo } from '../../components/Logo'
+import { NotificationBell } from '../../components/NotificationBell'
 import { UserMenu } from '../../components/UserMenu'
 import { XpChip } from '../../components/student/XpChip'
 import { STUDENT_TABS } from '../nav'
@@ -41,14 +42,7 @@ export function StudentLayout() {
 
           <div className="flex items-center gap-1 sm:gap-2">
             <XpChip />
-            {/* Notification bell — placeholder until notifications phase */}
-            <button
-              type="button"
-              aria-label="Notifications (coming soon)"
-              className="flex h-12 w-12 items-center justify-center rounded-full text-ink-muted hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              <Icon name="bell" className="h-5 w-5" />
-            </button>
+            <NotificationBell />
             <UserMenu />
           </div>
         </div>

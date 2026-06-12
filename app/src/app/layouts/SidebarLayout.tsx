@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { Icon } from '../../components/icons'
 import { Logo } from '../../components/Logo'
+import { NotificationBell } from '../../components/NotificationBell'
 import { UserMenu } from '../../components/UserMenu'
 import { useAuth } from '../../lib/auth/AuthContext'
 import type { NavItem } from '../nav'
@@ -155,13 +156,7 @@ export function SidebarLayout({ roleLabel, items }: SidebarLayoutProps) {
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
-              <button
-                type="button"
-                aria-label="Notifications (coming soon)"
-                className="flex h-12 w-12 items-center justify-center rounded-full text-ink-muted hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <Icon name="bell" className="h-5 w-5" />
-              </button>
+              <NotificationBell />
               <UserMenu />
             </div>
           </div>
