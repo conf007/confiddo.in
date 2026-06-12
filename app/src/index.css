@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+/*
+ * Confiddo design tokens — single source of truth for the web app.
+ * Derived from the live landing page (confiddo.in) and MVP_APP/CLAUDE.md:
+ * one primary (blue), one accent (orange), neutral slate grays.
+ * Gold/green are reserved for reward/success moments only (≤3 hue families
+ * per screen).
+ */
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+
+  /* Brand */
+  --color-navy: #0f172a; /* dark navy base — headers, hero surfaces */
+  --color-primary: #2563eb; /* blue */
+  --color-primary-light: #3b82f6;
+  --color-primary-tint: #eff6ff;
+  --color-accent: #ff6b00; /* orange — streaks, CTAs, XP moments */
+  --color-accent-light: #ff8533;
+  --color-accent-tint: #fff7ed;
+
+  /* Reward moments only */
+  --color-gold: #ffb800;
+  --color-gold-tint: #fffbeb;
+  --color-success: #16a34a;
+  --color-success-tint: #f0fdf4;
+
+  /* Readiness categories (teacher/principal analytics only) */
+  --color-band-green: #16a34a;
+  --color-band-yellow: #d97706;
+  --color-band-red: #dc2626;
+
+  /* Soft text per CLAUDE.md — never pure black */
+  --color-ink: #1a1a1a;
+  --color-ink-soft: #475569;
+  --color-ink-muted: #64748b;
+
+  /* Soft backgrounds — never harsh pure white next to heavy color */
+  --color-surface: #f8fafc;
+  --color-card: #ffffff;
+
+  --shadow-soft: 0 2px 8px rgb(0 0 0 / 0.08);
+  --radius-card: 1rem;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Line-height 1.5 for body text per design system */
+body {
+  line-height: 1.5;
+}
