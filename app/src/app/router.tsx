@@ -15,11 +15,23 @@ import { FirstLoginPage } from '../pages/auth/FirstLoginPage'
 import {
   ParentHomePage,
   PrincipalHomePage,
-  StudentHomePage,
   TeacherHomePage,
 } from '../pages/dashboards'
 import { SectionPlaceholderPage } from '../pages/SectionPlaceholderPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
+import { StudentHomePage } from '../pages/student/HomePage'
+import { TestStartPage } from '../pages/student/TestStartPage'
+import { QuestionPage } from '../pages/student/QuestionPage'
+import { ReviewPage } from '../pages/student/ReviewPage'
+import { SessionDonePage } from '../pages/student/SessionDonePage'
+import { ResultsPage } from '../pages/student/ResultsPage'
+import { StudentProgressPage } from '../pages/student/ProgressPage'
+import { BadgesPage } from '../pages/student/BadgesPage'
+import { CharactersPage } from '../pages/student/CharactersPage'
+import { ClassProgressPage } from '../pages/student/ClassProgressPage'
+import { LinkParentPage } from '../pages/student/LinkParentPage'
+import { StudentProfilePage } from '../pages/student/ProfilePage'
+import { XpRulesPage } from '../pages/student/XpRulesPage'
 
 // Served under https://confiddo.in/app/ (vite base '/app/').
 export const router = createBrowserRouter(
@@ -50,6 +62,18 @@ export const router = createBrowserRouter(
       ),
       children: [
         { index: true, element: <StudentHomePage /> },
+        { path: 'tests/:testId/start', element: <TestStartPage /> },
+        { path: 'tests/:testId/results', element: <ResultsPage /> },
+        { path: 'sessions/:sid/q/:n', element: <QuestionPage /> },
+        { path: 'sessions/:sid/review', element: <ReviewPage /> },
+        { path: 'sessions/:sid/done', element: <SessionDonePage /> },
+        { path: 'progress', element: <StudentProgressPage /> },
+        { path: 'badges', element: <BadgesPage /> },
+        { path: 'characters', element: <CharactersPage /> },
+        { path: 'class-progress', element: <ClassProgressPage /> },
+        { path: 'link-parent', element: <LinkParentPage /> },
+        { path: 'profile', element: <StudentProfilePage /> },
+        { path: 'xp-rules', element: <XpRulesPage /> },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
     },

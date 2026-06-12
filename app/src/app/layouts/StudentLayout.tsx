@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { Icon } from '../../components/icons'
 import { Logo } from '../../components/Logo'
 import { UserMenu } from '../../components/UserMenu'
+import { XpChip } from '../../components/student/XpChip'
 import { STUDENT_TABS } from '../nav'
 
 /**
@@ -39,14 +40,7 @@ export function StudentLayout() {
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Level/XP chip — placeholder until the gamification phase */}
-            <span
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-accent-tint px-3 py-1.5 text-xs font-semibold text-accent"
-              title="Your level and XP will appear here"
-            >
-              <Icon name="flame" className="h-3.5 w-3.5" />
-              Explorer · 0 XP
-            </span>
+            <XpChip />
             {/* Notification bell — placeholder until notifications phase */}
             <button
               type="button"
