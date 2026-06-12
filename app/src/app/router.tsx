@@ -15,7 +15,6 @@ import { FirstLoginPage } from '../pages/auth/FirstLoginPage'
 import {
   ParentHomePage,
   PrincipalHomePage,
-  TeacherHomePage,
 } from '../pages/dashboards'
 import { SectionPlaceholderPage } from '../pages/SectionPlaceholderPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
@@ -32,6 +31,15 @@ import { ClassProgressPage } from '../pages/student/ClassProgressPage'
 import { LinkParentPage } from '../pages/student/LinkParentPage'
 import { StudentProfilePage } from '../pages/student/ProfilePage'
 import { XpRulesPage } from '../pages/student/XpRulesPage'
+import { ClassListPage } from '../pages/teacher/ClassListPage'
+import { ClassOverviewPage } from '../pages/teacher/ClassOverviewPage'
+import { PaperFlowPage } from '../pages/teacher/PaperFlowPage'
+import { TestStatusPage } from '../pages/teacher/TestStatusPage'
+import { TestDetailPage } from '../pages/teacher/TestDetailPage'
+import { ReviewQueuePage } from '../pages/teacher/ReviewQueuePage'
+import { StudentDetailPage } from '../pages/teacher/StudentDetailPage'
+import { AnalyticsPage } from '../pages/teacher/AnalyticsPage'
+import { NotificationSettingsPage } from '../pages/teacher/NotificationSettingsPage'
 
 // Served under https://confiddo.in/app/ (vite base '/app/').
 export const router = createBrowserRouter(
@@ -85,7 +93,15 @@ export const router = createBrowserRouter(
         </RequireRole>
       ),
       children: [
-        { index: true, element: <TeacherHomePage /> },
+        { index: true, element: <ClassListPage /> },
+        { path: 'classes/:classId', element: <ClassOverviewPage /> },
+        { path: 'classes/:classId/review', element: <ReviewQueuePage /> },
+        { path: 'paper/new', element: <PaperFlowPage /> },
+        { path: 'tests', element: <TestStatusPage /> },
+        { path: 'tests/:testId', element: <TestDetailPage /> },
+        { path: 'students/:studentId', element: <StudentDetailPage /> },
+        { path: 'analytics', element: <AnalyticsPage /> },
+        { path: 'settings', element: <NotificationSettingsPage /> },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
     },
