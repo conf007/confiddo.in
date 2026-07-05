@@ -1,0 +1,12 @@
+# CODEOWNERS for confiddo-website. Enforces required review once branch protection
+# "Require review from Code Owners" is enabled (handoff — repo admin must flip it).
+#
+# TODO(handoff): replace @conf007 with the real core-team GitHub username(s).
+
+# Default owner for everything
+*                        @conf007
+
+# Sensitive: API client + auth/token handling always need a core reviewer
+/app/src/lib/api/        @conf007
+/app/src/lib/auth/       @conf007
+/.github/                @conf007
