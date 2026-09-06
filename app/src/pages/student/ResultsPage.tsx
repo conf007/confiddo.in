@@ -21,6 +21,7 @@ import { Spinner } from '../../components/ui/Spinner'
 import { studentKeys } from '../../components/student/hooks'
 import { friendlyError } from '../../lib/api/errors'
 import {
+  correctCount,
   getSolution,
   getTestResults,
   type AttemptResult,
@@ -80,10 +81,10 @@ export function ResultsPage() {
           Back to home
         </Link>
         <h1 className="text-2xl font-bold text-ink">
-          {headline(data.correct_count, data.total_questions)}
+          {headline(correctCount(data), data.total_questions)}
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
-          You got {data.correct_count} of {data.total_questions} — this review
+          You got {correctCount(data)} of {data.total_questions} — this review
           is just for you.
         </p>
       </div>

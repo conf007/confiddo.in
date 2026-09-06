@@ -234,15 +234,22 @@ export interface AttemptResult {
   solution_viewed_after_correct: boolean
 }
 
+/**
+ * Golden rule (backend fix A-06, 2026-09): the results payload carries NO aggregate score —
+ * correct_count / incorrect_count / score_percentage were removed server-side. Per-question
+ * correctness stays; derive any count from `attempts` with `correctCount()`.
+ */
 export interface SessionResults {
   session_id: string
   test_id: string
   total_questions: number
-  correct_count: number
-  incorrect_count: number
-  score_percentage: number
   attempts: AttemptResult[]
   incorrect_question_numbers: number[]
+}
+
+/** Number of questions whose final answer was correct (derived client-side, never served). */
+export function correctCount(results: Pick<SessionResults, 'attempts'>): number {
+  return results.attempts.filter((a) => a.is_correct).length
 }
 
 export function getTestResults(testId: string): Promise<SessionResults> {
