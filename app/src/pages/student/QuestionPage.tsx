@@ -26,7 +26,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
@@ -38,6 +38,7 @@ import {
   getHint,
   getSessionBundle,
   markQuestionsViewed,
+  versionConflictOf,
   getSolution,
   recordPersistence,
   reportQuestion,
@@ -47,6 +48,7 @@ import {
 import {
   getQuestionState,
   loadTracked,
+  setVersion,
   upsertQuestion,
   type TrackedSession,
 } from './session/tracker'
@@ -81,6 +83,7 @@ export function QuestionPage() {
 
 function QuestionInner({ sid, number }: { sid: string; number: number }) {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   // Tracked session (sessionStorage). Deep-link without one degrades politely.
   const [tracked, setTracked] = useState<TrackedSession | null>(() => loadTracked(sid))
@@ -124,6 +127,9 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   }
   useEffect(() => {
     if (!bundleQuery.data) return
+    const v = bundleQuery.data.session.version ?? undefined
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot sync of the server version into the tracker
+    setTracked((prev) => (prev ? setVersion(prev, v) : prev))
     void markQuestionsViewed(sid, [number]).catch(() => {
       /* best-effort: the submit path creates the row anyway */
     })
@@ -157,16 +163,34 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
 
   // ── Mutations ───────────────────────────────────────────────────────
 
+  // WS-F: when the server says the session moved on another device (409 VERSION_CONFLICT),
+  // re-hydrate from the bundle and jump to where it is now instead of racing.
+  const resync = useCallback(
+    (current: { version: number; status: string; current_question_number: number }) => {
+      setTracked((prev) => (prev ? setVersion(prev, current.version) : prev))
+      void queryClient.invalidateQueries({ queryKey: ['student', 'session', sid, 'bundle'] })
+      if (current.status !== 'in_progress') {
+        setActionError('This test was finished on another device.')
+        void navigate(`/student`)
+        return
+      }
+      setActionError('This test moved ahead on another device — continuing from there.')
+      void navigate(`/student/sessions/${sid}/q/${current.current_question_number}`)
+    },
+    [navigate, queryClient, sid],
+  )
+
   const submit = useMutation({
     mutationFn: () => {
       if (!question || !selected) throw new Error('no selection')
       const startedAt = startedAtRef.current ?? Date.now()
-      return submitAnswer(sid, question.id, selected, Date.now() - startedAt)
+      return submitAnswer(sid, question.id, selected, Date.now() - startedAt, tracked?.version)
     },
     onSuccess: (res) => {
       if (!question) return
       setActionError(null)
       setLastResult(res)
+      setTracked((prev) => (prev ? setVersion(prev, res.version) : prev))
       const wasWrongBefore = qState?.wrongOnce ?? false
       updateQuestion({
         questionId: question.id,
@@ -186,7 +210,11 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
         setPhase(wasWrongBefore ? 'wrong-again' : 'wrong-first')
       }
     },
-    onError: (e) => setActionError(friendlyError(e)),
+    onError: (e) => {
+      const conflict = versionConflictOf(e)
+      if (conflict) resync(conflict)
+      else setActionError(friendlyError(e))
+    },
   })
 
   const hint = useMutation({
@@ -205,7 +233,12 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   const persistence = useMutation({
     mutationFn: (persisted: boolean) => {
       if (!question) throw new Error('no question')
-      return recordPersistence(sid, question.id, persisted)
+      return recordPersistence(sid, question.id, persisted, tracked?.version)
+    },
+    onSuccess: (res) => setTracked((prev) => (prev ? setVersion(prev, res.version) : prev)),
+    onError: (e) => {
+      const conflict = versionConflictOf(e)
+      if (conflict) resync(conflict)
     },
   })
 
