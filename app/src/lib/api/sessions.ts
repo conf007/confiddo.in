@@ -234,13 +234,16 @@ export interface AttemptResult {
   solution_viewed_after_correct: boolean
 }
 
+/**
+ * Golden rule (backend fix A-06, 2026-09): the results payload carries NO aggregate score —
+ * correct_count / incorrect_count / score_percentage were removed server-side, and the UI
+ * must not reconstruct one from `attempts` either (the student never SEES a score).
+ * Per-question correctness stays for the review cards only.
+ */
 export interface SessionResults {
   session_id: string
   test_id: string
   total_questions: number
-  correct_count: number
-  incorrect_count: number
-  score_percentage: number
   attempts: AttemptResult[]
   incorrect_question_numbers: number[]
 }

@@ -5,6 +5,9 @@
  * answers or scores (ARCHITECTURE.md §6.3). We show counts in warm words,
  * not percentages.
  *
+ * Golden rule (backend A-06): the page renders NO aggregate — no count, no
+ * percentage, no score-banded headline — only per-question correctness.
+ *
  * Solution access reuses GET /sessions/{sid}/questions/{qid}/solution with
  * the results' session_id (after_correct mirrors whether the answer was
  * correct, matching the Flutter review flow's recording).
@@ -25,15 +28,6 @@ import {
   getTestResults,
   type AttemptResult,
 } from '../../lib/api/sessions'
-
-function headline(correct: number, total: number): string {
-  if (total === 0) return 'Your review'
-  const ratio = correct / total
-  if (ratio === 1) return 'Every single one — amazing!'
-  if (ratio >= 0.7) return 'Strong work — keep it up!'
-  if (ratio >= 0.4) return 'Good effort — every review makes you stronger.'
-  return 'Tough one — and reviewing it is exactly the right move.'
-}
 
 export function ResultsPage() {
   const { testId = '' } = useParams()
@@ -79,12 +73,11 @@ export function ResultsPage() {
           <Icon name="arrow-left" className="h-4 w-4" />
           Back to home
         </Link>
-        <h1 className="text-2xl font-bold text-ink">
-          {headline(data.correct_count, data.total_questions)}
-        </h1>
+        {/* Golden rule (A-06): no score, count, percentage or score-banded copy is ever
+            shown to the student — only the per-question review below. */}
+        <h1 className="text-2xl font-bold text-ink">Your review</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          You got {data.correct_count} of {data.total_questions} — this review
-          is just for you.
+          Go through each question — this review is just for you.
         </p>
       </div>
 
