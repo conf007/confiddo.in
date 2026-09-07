@@ -139,7 +139,9 @@ export function upsertQuestion(
 }
 
 export function setVersion(session: TrackedSession, version: number | undefined): TrackedSession {
-  if (version === undefined || version === session.version) return session
+  // Server versions only ever increase; never let a stale bundle re-hydrate an older value
+  // over the one a 409 VERSION_CONFLICT just told us about.
+  if (version === undefined || version <= (session.version ?? -1)) return session
   const next = { ...session, version }
   saveTracked(next)
   return next
