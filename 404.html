@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confiddo</title>
+    <script>
+      // GitHub Pages serves this file for any unknown path. Deep links into the SPA
+      // (/app/student/..., /app/login, ...) are handed to the app shell with the original
+      // path preserved; the shell's inline script restores it (app/index.html). Anything
+      // else is a genuine 404 on the landing site.
+      (function () {
+        var l = window.location
+        if (l.pathname.indexOf('/app/') === 0 && !/^\/app\/(assets|src)\//.test(l.pathname)) {
+          l.replace('/app/?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash))
+        }
+      })()
+    </script>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #fafafa; color: #1a1a1a; margin: 0; display: grid; place-items: center; min-height: 100vh; }
+      main { text-align: center; padding: 2rem; }
+      a { color: #2d5be3; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Page not found</h1>
+      <p>That page does not exist. <a href="/">Back to confiddo.in</a> · <a href="/app/">Open the app</a></p>
+    </main>
+  </body>
+</html>

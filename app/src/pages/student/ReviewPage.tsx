@@ -53,7 +53,7 @@ export function ReviewPage() {
         incorrect_count: incorrectCount(tracked),
         did_review: tracked.didReview,
         app_switches: tracked.appSwitches,
-      })
+      }, tracked.version)
     },
     onSuccess: (res) => {
       if (tracked) {

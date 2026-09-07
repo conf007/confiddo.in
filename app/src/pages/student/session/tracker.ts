@@ -59,6 +59,8 @@ export interface TrackedSession {
   completedAt?: number
   /** XP level before completing — lets /done celebrate a level-up */
   prevLevel?: number
+  /** WS-F: last server-side session version this client saw (sent as expected_version) */
+  version?: number
 }
 
 const key = (sessionId: string) => `confiddo.session.${sessionId}`
@@ -132,6 +134,15 @@ export function upsertQuestion(
     ...session,
     questions: { ...session.questions, [number]: { ...prev, ...patch } },
   }
+  saveTracked(next)
+  return next
+}
+
+export function setVersion(session: TrackedSession, version: number | undefined): TrackedSession {
+  // Server versions only ever increase; never let a stale bundle re-hydrate an older value
+  // over the one a 409 VERSION_CONFLICT just told us about.
+  if (version === undefined || version <= (session.version ?? -1)) return session
+  const next = { ...session, version }
   saveTracked(next)
   return next
 }

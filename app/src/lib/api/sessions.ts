@@ -46,6 +46,22 @@ export interface CreateSessionResponse {
   /** Edge Case #13 — deadline passed; submission allowed but flagged */
   is_late: boolean
   late_message?: string
+  /** WS-F optimistic concurrency: bumped on every server-side session write */
+  version?: number
+}
+
+/** 409 VERSION_CONFLICT payload (`detail.error.current`), see backend _require_expected_version */
+export interface VersionConflict {
+  version: number
+  status: string
+  current_question_number: number
+}
+
+export function versionConflictOf(e: unknown): VersionConflict | null {
+  const err = e as { status?: number; code?: string; detail?: unknown } | null
+  if (!err || err.status !== 409 || err.code !== 'VERSION_CONFLICT') return null
+  const d = err.detail as { error?: { current?: VersionConflict } } | undefined
+  return d?.error?.current ?? null
 }
 
 export function createSession(
@@ -55,6 +71,52 @@ export function createSession(
   return apiData('/student/sessions', {
     method: 'POST',
     body: { test_id: testId, mode },
+  })
+}
+
+// ── 1b. WS-E bundle: the whole session in one call (+ batched "viewed") ─
+// GET /student/sessions/{sid}/bundle returns every question with options and the
+// recorded attempt state; POST .../viewed creates the attempt rows for the questions
+// the client actually showed (so AIR's "shown" semantics are unchanged). The
+// per-question GET below still exists for the fielded Android app.
+
+export interface BundleAttemptState {
+  viewed: boolean
+  answered: boolean
+  selected_option_id: string | null
+  is_correct: boolean | null
+  hints_used: number
+  solution_viewed: boolean
+  persisted_after_wrong: boolean
+  gave_up_after_wrong: boolean
+}
+
+export interface SessionBundle {
+  session: {
+    session_id: string
+    test_id: string
+    status: string
+    session_type: string
+    current_question_number: number
+    total_questions: number
+    is_revision: boolean
+    version: number | null
+  }
+  questions: SessionQuestion[]
+  attempts: Record<string, BundleAttemptState>
+}
+
+export function getSessionBundle(sessionId: string): Promise<SessionBundle> {
+  return apiData(`/student/sessions/${sessionId}/bundle`)
+}
+
+export function markQuestionsViewed(
+  sessionId: string,
+  questionNumbers: number[],
+): Promise<{ created: number }> {
+  return apiData(`/student/sessions/${sessionId}/viewed`, {
+    method: 'POST',
+    body: { question_numbers: questionNumbers },
   })
 }
 
@@ -103,6 +165,7 @@ export interface SubmitAnswerResponse {
   correct_option_label: string
   has_next: boolean
   next_question_number: number | null
+  version?: number
 }
 
 export function submitAnswer(
@@ -110,11 +173,13 @@ export function submitAnswer(
   questionId: string,
   selectedOptionId: string,
   timeSpentMs?: number,
+  expectedVersion?: number,
 ): Promise<SubmitAnswerResponse> {
   return apiData(
     `/student/sessions/${sessionId}/questions/${questionId}/submit`,
     {
       method: 'POST',
+      query: { expected_version: expectedVersion },
       body: {
         selected_option_id: selectedOptionId,
         // Currently ignored by the backend (see header note) — sent for
@@ -138,10 +203,11 @@ export function recordPersistence(
   sessionId: string,
   questionId: string,
   persisted: boolean,
-): Promise<{ recorded: boolean }> {
+  expectedVersion?: number,
+): Promise<{ recorded: boolean; version?: number }> {
   return apiData(
     `/student/sessions/${sessionId}/questions/${questionId}/persistence`,
-    { method: 'POST', query: { persisted } },
+    { method: 'POST', query: { persisted, expected_version: expectedVersion } },
   )
 }
 
@@ -195,6 +261,7 @@ export interface CompleteSessionResponse {
   completed_at: string
   message: string
   gamification: GamificationResult
+  version?: number
 }
 
 export interface CompleteSessionRequest {
@@ -211,9 +278,11 @@ export interface CompleteSessionRequest {
 export function completeSession(
   sessionId: string,
   body: CompleteSessionRequest,
+  expectedVersion?: number,
 ): Promise<CompleteSessionResponse> {
   return apiData(`/student/sessions/${sessionId}/complete`, {
     method: 'POST',
+    query: { expected_version: expectedVersion },
     body,
   })
 }

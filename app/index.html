@@ -5,6 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Confiddo</title>
+    <script>
+      // GitHub Pages SPA fallback (WS-C): /404.html redirects unknown /app/* deep links to
+      // /app/?redirect=<path>; restore the real URL before the router mounts.
+      (function () {
+        var p = new URLSearchParams(window.location.search).get('redirect')
+        if (p && p.indexOf('/app/') === 0) {
+          window.history.replaceState(null, '', p)
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

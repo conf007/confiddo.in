@@ -1,0 +1,91 @@
+name: Deploy site + web app to GitHub Pages
+
+# WS-C (audit A-13): confiddo.in previously published the repo root as-is, so /app/ served the
+# un-built Vite source. This workflow builds the SPA and publishes ONE artifact:
+#   /            landing page (index.html, privacy.html, favicon.svg, CNAME)
+#   /app/        the built SPA (app/dist), plus index.html copies for the top-level routes so
+#                deep links return 200, and a /404.html SPA fallback for everything else.
+# Owner prerequisite (one-time): Pages -> Build and deployment -> Source = "GitHub Actions"
+#   gh api -X PUT repos/conf007/confiddo.in/pages -f build_type=workflow
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    env:
+      # Per-environment API base. Default (unset) = production Modal URL baked into client.ts.
+      # For a staging build set the repository/environment variable VITE_API_BASE_URL.
+      VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+      VITE_ENABLE_CLASS_RANKINGS: ${{ vars.VITE_ENABLE_CLASS_RANKINGS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Assemble the Pages artifact (landing + /app/)
+        working-directory: .
+        run: |
+          set -euo pipefail
+          rm -rf _site && mkdir -p _site/app
+          cp index.html privacy.html favicon.svg CNAME 404.html _site/
+          cp -r app/dist/. _site/app/
+          # Deep-link 200s: an index.html copy for every top-level SPA route (router.tsx).
+          for r in login register/teacher register/parent forgot-password forgot-username first-login \
+                   student teacher parent principal; do
+            mkdir -p "_site/app/$r" && cp app/dist/index.html "_site/app/$r/index.html"
+          done
+          touch _site/.nojekyll
+          find _site -maxdepth 3 -type f | sort | head -40
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Landing, app shell and a deep route all answer 200 with the app markers
+        run: |
+          set -euo pipefail
+          for url in https://confiddo.in/ https://confiddo.in/app/ https://confiddo.in/app/login/; do
+            code=$(curl -s -o /tmp/body -w '%{http_code}' "$url")
+            echo "$url -> $code"
+            test "$code" = "200"
+          done
+          grep -q '<div id="root">' /tmp/body
+          grep -q '/app/assets/' /tmp/body            # built bundle, not /src/main.tsx
+          ! grep -q 'src/main.tsx' /tmp/body
+          # SPA fallback for a dynamic deep link: 404.html must redirect into the app shell
+          curl -s https://confiddo.in/app/student/tests/x/start | grep -q "redirect="

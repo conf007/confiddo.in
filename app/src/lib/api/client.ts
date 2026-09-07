@@ -40,6 +40,10 @@ interface RequestOptions {
   signal?: AbortSignal
 }
 
+/** WS-D refresh-token rotation capability (backend token_service.ROTATION_CAPABILITY). */
+export const ROTATION_CAPABILITY = 'refresh-rotation'
+export const CLIENT_LABEL = 'web'
+
 const TIMEOUT_MS = 60_000
 const GET_RETRIES = 3
 const RETRY_BASE_MS = 1_000
@@ -54,14 +58,21 @@ async function refreshTokens(): Promise<boolean> {
     try {
       const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          // WS-D: opt into single-use (rotating) refresh tokens. The backend then returns a new
+          // refresh_token on every refresh and treats replay of the old one as theft.
+          'X-Client-Capabilities': ROTATION_CAPABILITY,
+          'X-Client': CLIENT_LABEL,
+        },
         body: JSON.stringify({ refresh_token: refresh }),
       })
       if (!res.ok) return false
       const json = await res.json()
-      // Backend wraps every response: { success, data: { access_token, expires_in } }
-      // (backend/app/utils/helpers.py api_response). Unwrap, with a fallback for
-      // a bare payload just in case.
+      // Backend wraps every response: { success, data: { access_token, expires_in,
+      // refresh_token? } } (backend/app/utils/helpers.py api_response). Unwrap, with a
+      // fallback for a bare payload just in case. A rotated refresh_token replaces the old
+      // one; when absent (legacy server) the stored token is kept.
       const data = (json?.data ?? json) as {
         access_token?: string
         refresh_token?: string
