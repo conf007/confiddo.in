@@ -1,11 +1,14 @@
 /**
  * Backend fix A-06 (2026-09): the student results payload no longer carries
- * correct_count / incorrect_count / score_percentage. The page derives the count
- * from per-question correctness instead. Pins the new shape so a regression in
- * either direction fails loudly.
+ * correct_count / incorrect_count / score_percentage, and the web UI must not
+ * reconstruct or display any aggregate. Pins both halves of the golden rule:
+ *  - the type/shape carries no score keys;
+ *  - ResultsPage source contains no count/percentage/score-banded copy.
  */
 import { describe, expect, it } from 'vitest'
-import { correctCount, type SessionResults } from '../sessions'
+import type { SessionResults } from '../sessions'
+// Vite `?raw` import: the page source as a string (vite/client types declare '*?raw').
+import resultsPageSource from '../../../pages/student/ResultsPage.tsx?raw'
 
 const attempt = (n: number, ok: boolean) => ({
   question_number: n,
@@ -21,7 +24,7 @@ const attempt = (n: number, ok: boolean) => ({
   solution_viewed_after_correct: false,
 })
 
-describe('student results shape (A-06)', () => {
+describe('student results golden rule (A-06)', () => {
   const results: SessionResults = {
     session_id: 's',
     test_id: 't',
@@ -30,12 +33,22 @@ describe('student results shape (A-06)', () => {
     incorrect_question_numbers: [2, 4],
   }
 
-  it('derives the correct count from per-question correctness', () => {
-    expect(correctCount(results)).toBe(2)
-  })
-
   it('carries no aggregate score keys', () => {
     const banned = ['correct_count', 'incorrect_count', 'score_percentage', 'accuracy']
     for (const key of banned) expect(key in results).toBe(false)
+  })
+
+  it('ResultsPage never renders a count, percentage or score-banded headline', () => {
+    const src = resultsPageSource
+    for (const forbidden of [
+      'correctCount',
+      'You got',
+      'ratio',
+      'headline(',
+      'score_percentage',
+      '.filter((a) => a.is_correct).length',
+    ]) {
+      expect(src.includes(forbidden), `ResultsPage.tsx must not contain "${forbidden}"`).toBe(false)
+    }
   })
 })
