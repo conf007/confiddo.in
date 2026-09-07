@@ -6,13 +6,27 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api, ROTATION_CAPABILITY } from '../client'
 import { tokenStore } from '../../auth/tokens'
 
+/** In-memory Storage: jsdom's localStorage is unavailable in this test environment on recent
+ *  Node (the global resolves to Node's experimental stub), so give tokens.ts a real one. */
+function memoryStorage(): Storage {
+  const m = new Map<string, string>()
+  return {
+    get length() { return m.size },
+    clear: () => m.clear(),
+    getItem: (k: string) => m.get(k) ?? null,
+    key: (i: number) => [...m.keys()][i] ?? null,
+    removeItem: (k: string) => { m.delete(k) },
+    setItem: (k: string, v: string) => { m.set(k, String(v)) },
+  } as Storage
+}
+
 function jsonResponse(status: number, body: unknown) {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 }
 
 describe('refresh-token rotation (WS-D)', () => {
   beforeEach(() => {
-    tokenStore.clear()
+    Object.defineProperty(window, 'localStorage', { value: memoryStorage(), configurable: true })
     tokenStore.save({ access: 'old-access', refresh: 'old-refresh', role: 'student' })
   })
   afterEach(() => vi.restoreAllMocks())
