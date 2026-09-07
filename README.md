@@ -88,9 +88,26 @@ Full list with file/line references in `ARCHITECTURE.md` §9. The ones that matt
 7. Logout is stateless (7-day refresh tokens stay valid server-side) — acceptable for MVP,
    flagged for security review.
 
-## Deploying
+## Deploying (WS-C, 2026-09)
 
-`npm run build` outputs `app/dist/` with `/app/`-prefixed asset URLs. Publish the repo root
-(landing page) as today, and serve `app/dist/` under the `/app/` path (e.g. copy it to an
-`app/` folder in the published artifact, or add a CI step). SPA fallback: requests under
-`/app/*` should rewrite to `/app/index.html`.
+`.github/workflows/deploy-pages.yml` runs on every push to `main`: typecheck → lint → test →
+`npm run build` → assembles one artifact (landing page at `/`, built SPA at `/app/`, an
+`index.html` copy per top-level route so deep links return 200, `/404.html` as the SPA fallback
+for dynamic routes) → `actions/deploy-pages` → smoke test (`/`, `/app/`, `/app/login/` must be
+200 with the built bundle, never `/src/main.tsx`).
+
+**Owner prerequisite (one-time):** switch Pages from the legacy branch publish to Actions:
+`gh api -X PUT repos/conf007/confiddo.in/pages -f build_type=workflow` (or Settings → Pages →
+Source → *GitHub Actions*). Until then `main` still publishes the raw source and `/app/` is blank.
+
+Environment-specific builds: set the repository (or environment) variable `VITE_API_BASE_URL`
+to point a build at staging (`https://conf007-staging--confiddo-backend-fastapi-app.modal.run/v1`);
+unset = production. `VITE_ENABLE_CLASS_RANKINGS` likewise. Locally: `app/.env.local`.
+
+Caching: GitHub Pages serves everything with `cache-control: max-age=600` and an ETag; Vite's
+hashed `assets/*` names make each release cache-safe, and `index.html` revalidates every 10 min.
+
+Bundle: route-level lazy chunks (`src/app/router.tsx`, 75 chunks); initial `index-*.js`
+≈ 105 kB gzip (was 168 kB in one 627 kB chunk).
+
+`.github/workflows/ci.yml` (typecheck/lint/test/build + gitleaks) runs on PRs and pushes to `main`/`dev`.

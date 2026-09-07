@@ -1,0 +1,72 @@
+name: CI
+
+# Lean gate for the confiddo-website SPA (Vite + React + TS, in app/).
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+
+concurrency:
+  group: web-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Typecheck + lint + test + build. All REQUIRED; each is a labelled step so a failure
+  # is easy to localize. Uses the repo's existing npm scripts (no new test infra added).
+  build-and-check:
+    name: Typecheck · Lint · Test · Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app        # the SPA lives in app/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22             # Node LTS
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: Typecheck (tsc -b)
+        run: npm run typecheck
+      - name: Lint (eslint — existing flat config)
+        run: npm run lint
+      - name: Test (vitest — parity suite)
+        run: npm test
+      - name: Build (vite)
+        run: npm run build
+
+  # Secret scan on NEW commits only (this repo carries the SEC-05 plaintext-credential
+  # finding — catching NEW secrets matters). Runs at the repo root.
+  secret-scan:
+    name: Secret scan (gitleaks, new commits only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0               # need history to diff against the base
+      - name: Install gitleaks
+        run: |
+          VERSION=8.18.4
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" -o /tmp/gl.tgz
+          tar -xzf /tmp/gl.tgz -C /tmp gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+      - name: Scan only new commits (not full history)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              RANGE="-1"               # first push on the ref: scan just the latest commit
+            else
+              RANGE="${BEFORE}..${{ github.sha }}"
+            fi
+          fi
+          echo "Scanning range: $RANGE"
+          gitleaks detect --source . --log-opts "$RANGE" --redact -v
