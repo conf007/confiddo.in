@@ -36,7 +36,8 @@ import { Sheet } from '../../components/student/Sheet'
 import { friendlyError } from '../../lib/api/errors'
 import {
   getHint,
-  getQuestion,
+  getSessionBundle,
+  markQuestionsViewed,
   getSolution,
   recordPersistence,
   reportQuestion,
@@ -103,11 +104,30 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
 
   useAppSwitchTracking(sid, true)
 
-  const questionQuery = useQuery({
-    queryKey: ['student', 'session', sid, 'question', number],
-    queryFn: () => getQuestion(sid, number),
+  // WS-E: one bundle fetch per session instead of one GET per question; the server creates
+  // the attempt row when we report the question as viewed (markQuestionsViewed below).
+  const bundleQuery = useQuery({
+    queryKey: ['student', 'session', sid, 'bundle'],
+    queryFn: () => getSessionBundle(sid),
     staleTime: Infinity,
   })
+  const questionQuery = {
+    data: bundleQuery.data
+      ? {
+          question: bundleQuery.data.questions.find((q) => q.question_number === number),
+          progress: { current: number, total: bundleQuery.data.session.total_questions },
+        }
+      : undefined,
+    isLoading: bundleQuery.isLoading,
+    isError: bundleQuery.isError,
+    error: bundleQuery.error,
+  }
+  useEffect(() => {
+    if (!bundleQuery.data) return
+    void markQuestionsViewed(sid, [number]).catch(() => {
+      /* best-effort: the submit path creates the row anyway */
+    })
+  }, [bundleQuery.data, sid, number])
 
   const question = questionQuery.data?.question
   const total = questionQuery.data?.progress.total ?? tracked?.totalQuestions ?? 10

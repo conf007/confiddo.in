@@ -58,6 +58,52 @@ export function createSession(
   })
 }
 
+// ── 1b. WS-E bundle: the whole session in one call (+ batched "viewed") ─
+// GET /student/sessions/{sid}/bundle returns every question with options and the
+// recorded attempt state; POST .../viewed creates the attempt rows for the questions
+// the client actually showed (so AIR's "shown" semantics are unchanged). The
+// per-question GET below still exists for the fielded Android app.
+
+export interface BundleAttemptState {
+  viewed: boolean
+  answered: boolean
+  selected_option_id: string | null
+  is_correct: boolean | null
+  hints_used: number
+  solution_viewed: boolean
+  persisted_after_wrong: boolean
+  gave_up_after_wrong: boolean
+}
+
+export interface SessionBundle {
+  session: {
+    session_id: string
+    test_id: string
+    status: string
+    session_type: string
+    current_question_number: number
+    total_questions: number
+    is_revision: boolean
+    version: number | null
+  }
+  questions: SessionQuestion[]
+  attempts: Record<string, BundleAttemptState>
+}
+
+export function getSessionBundle(sessionId: string): Promise<SessionBundle> {
+  return apiData(`/student/sessions/${sessionId}/bundle`)
+}
+
+export function markQuestionsViewed(
+  sessionId: string,
+  questionNumbers: number[],
+): Promise<{ created: number }> {
+  return apiData(`/student/sessions/${sessionId}/viewed`, {
+    method: 'POST',
+    body: { question_numbers: questionNumbers },
+  })
+}
+
 // ── 2. Get question by number (creates the attempt row on view) ──────
 
 export interface QuestionOption {
