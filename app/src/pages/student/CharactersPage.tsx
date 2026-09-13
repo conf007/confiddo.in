@@ -83,7 +83,7 @@ export function CharactersPage() {
   const unlockedCount = CHARACTERS.filter((c) => totalXp >= c.requiredXp).length
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-5xl space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-ink">Your crew</h1>
@@ -111,7 +111,7 @@ export function CharactersPage() {
                 {unlockedHere}/{characters.length}
               </Badge>
             </div>
-            <div className="grid grid-cols-2 gap-[3%] gap-y-4 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-4">
               {characters.map((character) => {
                 const unlocked = totalXp >= character.requiredXp
                 const isSelected = character.id === selectedId
@@ -122,21 +122,21 @@ export function CharactersPage() {
                     type="button"
                     onClick={() => setDetail(character)}
                     className={[
-                      'flex min-h-12 flex-col items-center gap-2 rounded-card bg-card p-[6%] py-4 text-center shadow-soft',
+                      'flex min-h-12 flex-col items-center gap-3 rounded-card bg-card px-3 py-5 text-center shadow-soft',
                       'transition-transform duration-150 hover:-translate-y-0.5',
                       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                       isSelected ? 'ring-2 ring-primary' : '',
                     ].join(' ')}
                   >
-                    <span className="relative">
+                    <span className="relative w-[58%]">
                       <CharacterAvatar
                         characterId={character.id}
                         locked={!unlocked}
                         glow={isSelected}
-                        sizeClassName="h-16 w-16 text-2xl"
+                        sizeClassName="aspect-square w-full"
                       />
                       {!unlocked && (
-                        <span className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-500">
+                        <span className="absolute right-0 bottom-0 flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-slate-500 ring-2 ring-card">
                           <Icon name="lock" className="h-3.5 w-3.5" />
                         </span>
                       )}
@@ -213,12 +213,12 @@ function CharacterDetailSheet({
   return (
     <Sheet open onClose={onClose} title="">
       <div className="flex flex-col items-center pb-2 text-center">
-        <span className="relative mb-4">
+        <span className="relative mb-4 w-[30%]">
           <CharacterAvatar
             characterId={character.id}
             locked={!unlocked}
             glow={unlocked}
-            sizeClassName="h-24 w-24 text-4xl"
+            sizeClassName="aspect-square w-full"
           />
           {!unlocked && (
             <span className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-500">

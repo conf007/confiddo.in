@@ -1,17 +1,3 @@
-/**
- * /student/class-progress
- *
- * FEATURE FLAG: VITE_ENABLE_CLASS_RANKINGS (default OFF).
- * GET /student/class-rankings exists (backend/app/api/student.py:176-227) but
- * returns a NAMED XP leaderboard, which conflicts with the product's
- * "no peer comparison" privacy stance — an open product question
- * (ARCHITECTURE.md §6.3/§9.1). Until product decides:
- *   - flag OFF (default): self-progress "your journey" view, no peer data
- *     is even fetched;
- *   - flag ON (`VITE_ENABLE_CLASS_RANKINGS=true` in .env): the XP-only
- *     leaderboard renders (XP, not scores), current student highlighted.
- */
-import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
@@ -20,134 +6,24 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
 import { CharacterAvatar } from '../../components/student/CharacterAvatar'
-import { ProgressBar } from '../../components/student/ProgressBar'
-import {
-  studentKeys,
-  useGamificationQuery,
-} from '../../components/student/hooks'
-import {
-  CLASS_RANKINGS_ENABLED,
-  getClassRankings,
-} from '../../lib/api/student'
+import { GalaxyMap } from '../../components/student/GalaxyMap'
+import { xpToNextRank } from '../../components/student/galaxy'
+import { studentKeys } from '../../components/student/hooks'
+import { getClassRankings } from '../../lib/api/student'
 import { friendlyError } from '../../lib/api/errors'
-import { levelProgressFrom } from '../../components/student/gamification'
 
-export function ClassProgressPage() {
-  return CLASS_RANKINGS_ENABLED ? <RankingsView /> : <JourneyView />
-}
-
-// ── Default: self-progress framing (no peer data fetched) ────────────
-
-function JourneyView() {
-  const gamification = useGamificationQuery()
-
-  if (gamification.isLoading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner className="h-8 w-8 text-primary" />
-      </div>
-    )
-  }
-  const g = gamification.data
-  if (!g) {
-    return (
-      <EmptyState
-        icon="users"
-        title="We couldn't load your journey"
-        description={friendlyError(gamification.error)}
-        action={
-          <Button variant="secondary" onClick={() => gamification.refetch()}>
-            Try again
-          </Button>
-        }
-      />
-    )
-  }
-
-  const { progress: levelProgress, toNext } = levelProgressFrom(g)
-
-  const stats = [
-    { label: 'Tests completed', value: g.total_tests_completed },
-    { label: 'Practice days', value: g.total_practice_days },
-    { label: 'Active weeks', value: g.weeks_with_activity },
-    { label: 'Perfect tests', value: g.perfect_test_count },
-  ]
-
+function StatChip({ icon, value, label }: { icon: string; value: string; label: string }) {
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-ink">Your journey</h1>
-        <p className="mt-1 text-sm leading-relaxed text-ink-muted">
-          The only comparison that matters is you, last week vs you, this
-          week. Here's how far you've come.
-        </p>
-      </div>
-
-      <Card>
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-              Level
-            </p>
-            <p className="text-lg font-semibold text-ink">{g.level_name}</p>
-          </div>
-          <Badge tone="accent">
-            <Icon name="flame" className="h-3.5 w-3.5" />
-            {g.total_points.toLocaleString()} XP
-          </Badge>
-        </div>
-        <ProgressBar value={levelProgress} tone="primary" label="Level progress" />
-        <p className="mt-2 text-center text-xs text-ink-muted">
-          {toNext === null
-            ? `Top level — ${g.level_name}!`
-            : `${toNext.toLocaleString()} XP to the next level`}
-        </p>
-      </Card>
-
-      <div className="grid grid-cols-2 gap-4">
-        {stats.map((s) => (
-          <Card key={s.label} className="text-center">
-            <p className="text-2xl font-bold text-ink">{s.value}</p>
-            <p className="mt-1 text-xs text-ink-muted">{s.label}</p>
-          </Card>
-        ))}
-      </div>
-
-      <Card className="flex items-center gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent-tint text-accent">
-          <Icon name="flame" className="h-6 w-6" />
-        </span>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink">
-            {g.current_streak > 0
-              ? `${g.current_streak}-day streak going`
-              : 'Start a new streak today'}
-          </p>
-          <p className="text-xs text-ink-muted">
-            Longest so far: {g.longest_streak} day{g.longest_streak === 1 ? '' : 's'}
-          </p>
-        </div>
-      </Card>
-
-      <div className="text-center">
-        <Link
-          to="/student/progress"
-          className="inline-flex h-12 items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-light"
-        >
-          See your full progress
-        </Link>
-      </div>
+    <div className="flex flex-col items-center rounded-xl bg-surface px-2 py-3 text-center">
+      <span className="text-sm" aria-hidden="true">{icon}</span>
+      <span className="text-sm font-extrabold text-ink">{value}</span>
+      <span className="text-[10px] font-medium text-ink-muted">{label}</span>
     </div>
   )
 }
 
-// ── Flag ON: XP-only leaderboard (open product question, §9.1) ────────
-
-function RankingsView() {
-  const rankings = useQuery({
-    queryKey: studentKeys.rankings,
-    queryFn: getClassRankings,
-  })
+export function ClassProgressPage() {
+  const rankings = useQuery({ queryKey: studentKeys.rankings, queryFn: getClassRankings })
 
   if (rankings.isLoading) {
     return (
@@ -161,7 +37,7 @@ function RankingsView() {
     return (
       <EmptyState
         icon="users"
-        title="We couldn't load your class right now"
+        title="Couldn't load your class"
         description={friendlyError(rankings.error)}
         action={
           <Button variant="secondary" onClick={() => rankings.refetch()}>
@@ -172,38 +48,52 @@ function RankingsView() {
     )
   }
 
+  const toRankUp = xpToNextRank(data.rankings)
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">Class progress</h1>
-        <p className="mt-1 text-sm text-ink-muted">
-          XP from effort and practice — this is about showing up, not marks.
-          You're #{data.user_rank} of {data.total_students}.
-        </p>
+        <p className="mt-1 text-sm text-ink-muted">XP from effort and practice, not marks.</p>
       </div>
+
+      <Card>
+        <div className="mb-4 flex items-center gap-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-tint text-xl" aria-hidden="true">🌌</span>
+          <h2 className="text-base font-semibold text-ink">Class Galaxy Map</h2>
+          <Badge tone="primary" className="ml-auto">
+            {data.total_students} students
+          </Badge>
+        </div>
+        <GalaxyMap entries={data.rankings} />
+        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs font-medium text-ink-muted">
+          <span>👑 Rank 1</span>
+          <span>⭐ You</span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#90CAF9]" /> Classmates
+          </span>
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <StatChip icon="👥" value={String(data.total_students)} label="students" />
+          <StatChip icon="🚀" value={`#${data.user_rank}`} label="your rank" />
+          <StatChip icon="⚡" value={data.user_rank === 1 ? 'Top!' : `+${toRankUp} XP`} label="to rank up" />
+        </div>
+      </Card>
 
       <Card padded={false} className="divide-y divide-slate-100">
         {data.rankings.map((entry) => (
           <div
             key={entry.student_id}
-            className={[
-              'flex items-center gap-3 px-4 py-3 sm:px-6',
-              entry.is_current_user ? 'bg-primary-tint/60' : '',
-            ].join(' ')}
+            className={['flex items-center gap-3 px-4 py-3 sm:px-6', entry.is_current_user ? 'bg-primary-tint/60' : ''].join(' ')}
           >
             <span className="w-8 shrink-0 text-center text-sm font-semibold text-ink-muted">
-              {entry.rank}
+              {entry.rank === 1 ? '👑' : entry.rank}
             </span>
-            <CharacterAvatar
-              characterId={entry.character}
-              sizeClassName="h-10 w-10 text-base"
-            />
+            <CharacterAvatar characterId={entry.character} sizeClassName="h-10 w-10" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-ink">
                 {entry.name}
-                {entry.is_current_user && (
-                  <span className="ml-1.5 text-xs font-semibold text-primary">(you)</span>
-                )}
+                {entry.is_current_user && <span className="ml-1.5 text-xs font-semibold text-primary">(you)</span>}
               </p>
               {entry.current_streak > 0 && (
                 <p className="flex items-center gap-1 text-xs text-ink-muted">
@@ -212,9 +102,7 @@ function RankingsView() {
                 </p>
               )}
             </div>
-            <span className="shrink-0 text-sm font-semibold text-accent">
-              {entry.total_points.toLocaleString()} XP
-            </span>
+            <span className="shrink-0 text-sm font-semibold text-accent">{entry.total_points.toLocaleString()} XP</span>
           </div>
         ))}
       </Card>

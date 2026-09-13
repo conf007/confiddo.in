@@ -16,6 +16,8 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
 import { CharacterAvatar } from '../../components/student/CharacterAvatar'
+import { LevelCard } from '../../components/student/LevelCard'
+import { SubjectSection } from '../../components/student/SubjectSection'
 import { streakTodayStatus } from '../../components/student/gamification'
 import {
   useGamificationQuery,
@@ -190,6 +192,8 @@ export function StudentHomePage() {
         </div>
       </div>
 
+      {g && <LevelCard g={g} />}
+
       {inProgress.length > 0 && (
         <Card className="flex flex-col items-start justify-between gap-4 border border-primary/15 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
@@ -218,29 +222,13 @@ export function StudentHomePage() {
           description="When your teacher publishes a practice test, it will appear right here. Check back soon!"
         />
       ) : (
-        [...bySubject.entries()].map(([subject, subjectTests]) => {
-          const done = subjectTests.filter((t) => t.session_status === 'completed').length
-          return (
-            <section key={subject} aria-label={subject}>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-tint text-primary">
-                    <Icon name="book" className="h-4.5 w-4.5" />
-                  </span>
-                  <h2 className="text-base font-semibold text-ink">{subject}</h2>
-                </div>
-                <Badge tone="neutral">
-                  {done}/{subjectTests.length} done
-                </Badge>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {subjectTests.map((test) => (
-                  <TestCard key={test.id} test={test} />
-                ))}
-              </div>
-            </section>
-          )
-        })
+        [...bySubject.entries()].map(([subject, subjectTests]) => (
+          <SubjectSection key={subject} subject={subject} tests={subjectTests}>
+            {subjectTests.map((test) => (
+              <TestCard key={test.id} test={test} />
+            ))}
+          </SubjectSection>
+        ))
       )}
     </div>
   )
