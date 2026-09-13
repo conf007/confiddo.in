@@ -34,6 +34,11 @@ test('student core loop: characters, history, a full test, no score anywhere', a
   await page.goto('/app/student')
   await expect(page.getByTestId('level-card')).toContainText('XP to Rising Star ⚡')
 
+  await page.goto('/app/student/class-progress')
+  await expect(page.getByText('Class Galaxy Map')).toBeVisible()
+  await expect(page.getByTestId('galaxy-map')).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath('class.png'), fullPage: true, animations: 'disabled' })
+
   await page.goto(`/app/student/tests/${testId}/start`)
   await page.getByRole('button', { name: 'Start test' }).click()
   await expect(page).toHaveURL(/\/q\/1$/)
