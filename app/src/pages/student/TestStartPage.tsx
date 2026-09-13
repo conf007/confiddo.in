@@ -24,11 +24,15 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
 import { useStudentTestsQuery } from '../../components/student/hooks'
+import { SessionLockGate } from '../../components/student/SessionLockGate'
 import { ApiError } from '../../lib/api/client'
 import { friendlyError } from '../../lib/api/errors'
 import {
   createSession,
+  sessionLockOf,
+  takeOverSession,
   type CreateSessionResponse,
+  type SessionLock,
   type SessionMode,
 } from '../../lib/api/sessions'
 import { initTracked } from './session/tracker'
@@ -41,6 +45,7 @@ export function TestStartPage() {
   const [completedGate, setCompletedGate] = useState(false)
   const [lateSession, setLateSession] = useState<CreateSessionResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [lock, setLock] = useState<SessionLock | null>(null)
 
   const test = tests.data?.tests.find((t) => t.id === testId)
 
@@ -75,13 +80,31 @@ export function TestStartPage() {
       }
     },
     onError: (e) => {
-      if (e instanceof ApiError && e.code === 'PARENT_NOT_LOGGED_IN') {
+      const l = sessionLockOf(e)
+      if (l) {
+        setLock(l)
+      } else if (e instanceof ApiError && e.code === 'PARENT_NOT_LOGGED_IN') {
         setParentGate(true)
       } else if (e instanceof ApiError && e.code === 'TEST_ALREADY_COMPLETED') {
         setCompletedGate(true)
       } else {
         setError(friendlyError(e))
       }
+    },
+  })
+
+  const takeOver = useMutation({
+    mutationFn: () => {
+      if (!lock) throw new Error('no lock')
+      return takeOverSession(lock.session_id)
+    },
+    onSuccess: () => {
+      setLock(null)
+      start.mutate('continue')
+    },
+    onError: (e) => {
+      const l = sessionLockOf(e)
+      if (l) setLock(l)
     },
   })
 
@@ -271,6 +294,13 @@ export function TestStartPage() {
           </p>
         )}
       </Card>
+
+      <SessionLockGate
+        lock={lock}
+        onTakeOver={() => takeOver.mutate()}
+        taking={takeOver.isPending || (start.isPending && start.variables === 'continue')}
+        error={takeOver.isError && !sessionLockOf(takeOver.error) ? friendlyError(takeOver.error) : null}
+      />
     </div>
   )
 }

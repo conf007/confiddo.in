@@ -51,6 +51,7 @@ const ClassProgressPage = lazy(() => import('../pages/student/ClassProgressPage'
 const LinkParentPage = lazy(() => import('../pages/student/LinkParentPage').then((m) => ({ default: m.LinkParentPage })))
 const StudentProfilePage = lazy(() => import('../pages/student/ProfilePage').then((m) => ({ default: m.StudentProfilePage })))
 const XpRulesPage = lazy(() => import('../pages/student/XpRulesPage').then((m) => ({ default: m.XpRulesPage })))
+const HistoryPage = lazy(() => import('../pages/student/HistoryPage').then((m) => ({ default: m.HistoryPage })))
 const ClassListPage = lazy(() => import('../pages/teacher/ClassListPage').then((m) => ({ default: m.ClassListPage })))
 const ClassOverviewPage = lazy(() => import('../pages/teacher/ClassOverviewPage').then((m) => ({ default: m.ClassOverviewPage })))
 const PaperFlowPage = lazy(() => import('../pages/teacher/PaperFlowPage').then((m) => ({ default: m.PaperFlowPage })))
@@ -128,6 +129,7 @@ export const router = createBrowserRouter(
         { path: 'link-parent', element: lz(LinkParentPage) },
         { path: 'profile', element: lz(StudentProfilePage) },
         { path: 'xp-rules', element: lz(XpRulesPage) },
+        { path: 'history', element: lz(HistoryPage) },
         { path: 'notifications', element: lz(NotificationsPage) },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],

@@ -70,3 +70,14 @@ export function deviceId(): string {
   }
   return id
 }
+
+const SURFACE_KEY = 'confiddo.surface_id'
+
+export function surfaceId(): string {
+  let id = storage().getItem(SURFACE_KEY)
+  if (!id) {
+    id = `web-${crypto.randomUUID()}`
+    storage().setItem(SURFACE_KEY, id)
+  }
+  return id
+}

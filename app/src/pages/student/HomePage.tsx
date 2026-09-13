@@ -15,12 +15,16 @@ import { Card } from '../../components/ui/Card'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
+import { CharacterAvatar } from '../../components/student/CharacterAvatar'
+import { streakTodayStatus } from '../../components/student/gamification'
 import {
+  useGamificationQuery,
   useStudentProfileQuery,
   useStudentTestsQuery,
 } from '../../components/student/hooks'
 import { friendlyError } from '../../lib/api/errors'
 import type { StudentTest } from '../../lib/api/student'
+import { getCharacter } from '../../lib/parity'
 
 /** Server deadline rendered verbatim; null-safe (field not sent today). */
 function deadlineLabel(deadline?: string | null): string | null {
@@ -88,6 +92,7 @@ function TestCard({ test }: { test: StudentTest }) {
 export function StudentHomePage() {
   const tests = useStudentTestsQuery()
   const profile = useStudentProfileQuery()
+  const gamification = useGamificationQuery()
 
   if (tests.isLoading) {
     return (
@@ -114,7 +119,11 @@ export function StudentHomePage() {
 
   const allTests = tests.data?.tests ?? []
   const inProgress = allTests.filter((t) => t.session_status === 'in_progress')
+  const completedCount = allTests.filter((t) => t.session_status === 'completed').length
   const firstName = profile.data?.full_name?.split(' ')[0]
+  const character = profile.data ? getCharacter(profile.data.selected_character) : null
+  const g = gamification.data
+  const today = g ? streakTodayStatus(g) : null
 
   // Group by subject, preserving server order within each group
   const bySubject = new Map<string, StudentTest[]>()
@@ -127,15 +136,43 @@ export function StudentHomePage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-ink">
-            {firstName ? `Hi ${firstName}!` : 'Welcome back!'}
-          </h1>
-          <p className="mt-1 text-sm text-ink-muted">
-            No pressure — just practice at your own pace.
-          </p>
+        <div className="flex items-center gap-3">
+          {character && (
+            <Link to="/student/characters" title={`Playing as ${character.name}`}>
+              <CharacterAvatar
+                characterId={character.id}
+                glow
+                sizeClassName="h-14 w-14 text-xl"
+                data-testid="home-character"
+              />
+            </Link>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold text-ink">
+              {firstName ? `Hi ${firstName}!` : 'Welcome back!'}
+            </h1>
+            <p className="mt-1 text-sm text-ink-muted">
+              {g && g.current_streak > 0 && today ? (
+                <span className="inline-flex items-center gap-1" data-testid="home-streak">
+                  <Icon name="flame" className="h-3.5 w-3.5 text-accent" />
+                  {g.current_streak}-day streak · {today.label}
+                </span>
+              ) : (
+                'No pressure — just practice at your own pace.'
+              )}
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
+          {completedCount > 0 && (
+            <Link
+              to="/student/history"
+              className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"
+            >
+              <Icon name="clipboard" className="h-4 w-4" />
+              Past tests
+            </Link>
+          )}
           <Link
             to="/student/link-parent"
             className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"

@@ -30,7 +30,7 @@ import {
   getClassRankings,
 } from '../../lib/api/student'
 import { friendlyError } from '../../lib/api/errors'
-import { nextLevelPoints, LEVEL_THRESHOLDS } from '../../lib/parity'
+import { levelProgressFrom } from '../../components/student/gamification'
 
 export function ClassProgressPage() {
   return CLASS_RANKINGS_ENABLED ? <RankingsView /> : <JourneyView />
@@ -64,10 +64,7 @@ function JourneyView() {
     )
   }
 
-  const next = nextLevelPoints(g.total_points)
-  const currentFloor = LEVEL_THRESHOLDS[g.level] ?? 0
-  const levelProgress =
-    next === null ? 1 : (g.total_points - currentFloor) / (next - currentFloor)
+  const { progress: levelProgress, toNext } = levelProgressFrom(g)
 
   const stats = [
     { label: 'Tests completed', value: g.total_tests_completed },
@@ -101,9 +98,9 @@ function JourneyView() {
         </div>
         <ProgressBar value={levelProgress} tone="primary" label="Level progress" />
         <p className="mt-2 text-center text-xs text-ink-muted">
-          {next === null
-            ? 'Top level — Galaxy Master!'
-            : `${(next - g.total_points).toLocaleString()} XP to the next level`}
+          {toNext === null
+            ? `Top level — ${g.level_name}!`
+            : `${toNext.toLocaleString()} XP to the next level`}
         </p>
       </Card>
 

@@ -8,11 +8,6 @@
  * and the backend's valid_characters list (backend/app/api/student.py:154-159)
  * both contain 18 ids (6 starter + 4 rare + 4 epic + 4 legendary). The code wins.
  *
- * IMPORTANT: the unlock gate is CLIENT-SIDE ONLY. PUT /v1/student/character
- * validates the ID against this 18-name list but does NOT verify XP
- * (backend/app/api/student.py:146-173) — the web app must replicate this gate
- * faithfully (ARCHITECTURE.md §9.5).
- *
  * Verified against the Dart + Python sources 2026-06-11.
  */
 

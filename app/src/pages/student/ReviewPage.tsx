@@ -21,8 +21,9 @@ import {
   studentKeys,
   useInvalidateStudentData,
 } from '../../components/student/hooks'
+import { SessionLockGate } from '../../components/student/SessionLockGate'
 import { friendlyError } from '../../lib/api/errors'
-import { completeSession } from '../../lib/api/sessions'
+import { completeSession, versionConflictOf } from '../../lib/api/sessions'
 import type { GamificationData } from '../../lib/api/student'
 import {
   answeredCount,
@@ -31,10 +32,12 @@ import {
   loadTracked,
   setCompletion,
   setDidReview,
+  setVersion,
   skippedCount,
   skippedNumbers,
 } from './session/tracker'
 import { useAppSwitchTracking } from './session/useAppSwitches'
+import { useSessionLease } from './session/useSessionLease'
 
 export function ReviewPage() {
   const { sid = '' } = useParams()
@@ -42,8 +45,10 @@ export function ReviewPage() {
   const qc = useQueryClient()
   const invalidate = useInvalidateStudentData()
   const [tracked, setTracked] = useState(() => loadTracked(sid))
+  const [conflictNote, setConflictNote] = useState<string | null>(null)
 
   useAppSwitchTracking(sid, true)
+  const lease = useSessionLease(sid, true)
 
   const finish = useMutation({
     mutationFn: () => {
@@ -62,6 +67,18 @@ export function ReviewPage() {
       }
       invalidate()
       void navigate(`/student/sessions/${sid}/done`, { replace: true })
+    },
+    onError: (e) => {
+      if (lease.handleError(e)) return
+      const conflict = versionConflictOf(e)
+      if (!conflict) return
+      if (conflict.status !== 'in_progress') {
+        invalidate()
+        void navigate('/student', { replace: true })
+        return
+      }
+      setTracked((prev) => (prev ? setVersion(prev, conflict.version) : prev))
+      setConflictNote('This test moved on another device. Finish again.')
     },
   })
 
@@ -168,11 +185,23 @@ export function ReviewPage() {
         </p>
       )}
 
-      {finish.isError && (
+      {conflictNote && (
+        <p className="text-center text-sm text-ink-soft" role="status">
+          {conflictNote}
+        </p>
+      )}
+      {finish.isError && !conflictNote && !lease.lock && (
         <p className="text-center text-sm text-band-red" role="alert">
           {friendlyError(finish.error)}
         </p>
       )}
+
+      <SessionLockGate
+        lock={lease.lock}
+        onTakeOver={() => lease.takeOver.mutate()}
+        taking={lease.takeOver.isPending}
+        error={lease.takeOver.isError && !lease.lock?.taken_over ? friendlyError(lease.takeOver.error) : null}
+      />
 
       <div className="space-y-3">
         {needsAttention && firstToRevisit !== undefined && (

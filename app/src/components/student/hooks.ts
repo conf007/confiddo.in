@@ -4,6 +4,7 @@
  */
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  getAcademicSessions,
   getGamification,
   getStudentProfile,
   getStudentTests,
@@ -16,6 +17,15 @@ export const studentKeys = {
   profile: ['student', 'profile'] as const,
   results: (testId: string) => ['student', 'results', testId] as const,
   rankings: ['student', 'class-rankings'] as const,
+  academicSessions: ['student', 'academic-sessions'] as const,
+}
+
+export function useAcademicSessionsQuery() {
+  return useQuery({
+    queryKey: studentKeys.academicSessions,
+    queryFn: getAcademicSessions,
+    staleTime: 60_000,
+  })
 }
 
 export function useGamificationQuery() {
@@ -26,11 +36,12 @@ export function useGamificationQuery() {
   })
 }
 
-export function useStudentProfileQuery() {
+export function useStudentProfileQuery(enabled = true) {
   return useQuery({
     queryKey: studentKeys.profile,
     queryFn: getStudentProfile,
     staleTime: 60_000,
+    enabled,
   })
 }
 

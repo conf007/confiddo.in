@@ -48,6 +48,66 @@ export interface CreateSessionResponse {
   late_message?: string
   /** WS-F optimistic concurrency: bumped on every server-side session write */
   version?: number
+  lease?: SessionLease
+}
+
+export interface SessionLease {
+  surface_kind: 'app' | 'web' | 'app-legacy' | null
+  held_by_me: boolean
+  seconds_remaining: number
+  ttl_seconds: number
+  takeover_count: number
+  enforced: boolean
+}
+
+export interface SessionLock {
+  session_id: string
+  surface_kind: 'app' | 'web' | 'app-legacy' | null
+  seconds_remaining: number
+  taken_over: boolean
+  version: number
+}
+
+export const SESSION_LOCKED = 'SESSION_LOCKED_OTHER_SURFACE'
+
+export function sessionLockOf(e: unknown): SessionLock | null {
+  const err = e as { status?: number; code?: string; detail?: unknown } | null
+  if (!err || err.status !== 423 || err.code !== SESSION_LOCKED) return null
+  const d = err.detail as { error?: Partial<SessionLock> } | undefined
+  const lock = d?.error
+  if (!lock || typeof lock.session_id !== 'string') return null
+  return {
+    session_id: lock.session_id,
+    surface_kind: lock.surface_kind ?? null,
+    seconds_remaining: lock.seconds_remaining ?? 0,
+    taken_over: lock.taken_over === true,
+    version: lock.version ?? 0,
+  }
+}
+
+export function surfaceLabel(kind: SessionLock['surface_kind']): string {
+  if (kind === 'web') return 'another browser'
+  if (kind === 'app' || kind === 'app-legacy') return 'your app'
+  return 'another device'
+}
+
+export interface TakeOverResponse {
+  session_id: string
+  status: string
+  current_question_number: number
+  version: number
+  lease: SessionLease
+  transferred: boolean
+}
+
+export function takeOverSession(sessionId: string): Promise<TakeOverResponse> {
+  return apiData(`/student/sessions/${sessionId}/take-over`, { method: 'POST' })
+}
+
+export function renewLease(
+  sessionId: string,
+): Promise<{ version: number; status: string; lease: SessionLease }> {
+  return apiData(`/student/sessions/${sessionId}/lease`, { method: 'POST' })
 }
 
 /** 409 VERSION_CONFLICT payload (`detail.error.current`), see backend _require_expected_version */
@@ -101,6 +161,7 @@ export interface SessionBundle {
     total_questions: number
     is_revision: boolean
     version: number | null
+    lease?: SessionLease
   }
   questions: SessionQuestion[]
   attempts: Record<string, BundleAttemptState>

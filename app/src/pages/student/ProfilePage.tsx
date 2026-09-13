@@ -127,13 +127,35 @@ export function StudentProfilePage() {
         </Link>
       </Card>
 
+      <Card>
+        <h2 className="mb-2 text-base font-semibold text-ink">Parent</h2>
+        {p.parent_has_logged_in ? (
+          <p className="flex items-center gap-2 text-sm text-ink-soft" data-testid="parent-status">
+            <Icon name="check" className="h-4 w-4 text-success" />
+            Parent linked and signed in.
+          </p>
+        ) : (
+          <p className="flex items-center gap-2 text-sm text-ink-soft" data-testid="parent-status">
+            <Icon name="alert" className="h-4 w-4 text-accent" />
+            No parent has signed in yet.
+          </p>
+        )}
+      </Card>
+
       <Card padded={false} className="divide-y divide-slate-100">
         <Link
           to="/student/link-parent"
           className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50"
         >
           <Icon name="link" className="h-5 w-5 text-primary" />
-          Link a parent
+          {p.parent_has_logged_in ? 'Link another parent' : 'Link a parent'}
+        </Link>
+        <Link
+          to="/student/history"
+          className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50"
+        >
+          <Icon name="clipboard" className="h-5 w-5 text-primary" />
+          My past tests
         </Link>
         <Link
           to="/student/xp-rules"
