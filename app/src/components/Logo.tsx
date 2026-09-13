@@ -21,7 +21,7 @@ const FLOWER = ['#FF4500', '#FF5500', '#FF6500', '#FF7500', '#FF8500', '#FF9500'
 
 export function LogoMark({ className = 'h-9 w-9' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 200 200" className={className} aria-hidden="true">
+    <svg viewBox="22 32 164 122" className={className} aria-hidden="true">
       {PETALS.map(([cx, cy, rx, ry, fill, opacity, rot]) => (
         <ellipse key={fill} cx={cx} cy={cy} rx={rx} ry={ry} fill={fill} opacity={opacity} transform={`rotate(${rot} ${cx} ${cy})`} />
       ))}
@@ -42,7 +42,7 @@ export function Logo({ variant = 'dark', withWordmark = true, className = '' }: 
   const text = variant === 'light' ? 'text-white' : 'text-ink'
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      <LogoMark className="h-10 w-10 shrink-0" />
+      <LogoMark className="h-11 w-14 shrink-0" />
       {withWordmark && (
         <span className={`text-sm font-extrabold tracking-[0.2em] ${text}`}>CONFIDDO</span>
       )}
