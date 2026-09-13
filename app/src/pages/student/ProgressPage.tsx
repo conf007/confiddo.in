@@ -26,6 +26,9 @@ import { useGamificationQuery } from '../../components/student/hooks'
 import { friendlyError } from '../../lib/api/errors'
 import { READINESS_DISPLAY_NAMES } from '../../lib/parity'
 import { levelProgressFrom, streakTodayStatus } from '../../components/student/gamification'
+import { LevelJourney } from '../../components/student/LevelJourney'
+import { WeeklyGoals } from '../../components/student/WeeklyGoals'
+import { levelEmoji } from '../../components/student/levels'
 
 const READINESS_LADDER = [
   { word: READINESS_DISPLAY_NAMES.avoidant, hint: 'Every journey starts somewhere' },
@@ -111,11 +114,16 @@ export function StudentProgressPage() {
       {/* Level + XP */}
       <Card>
         <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-              Level {g.level + 1}
-            </p>
-            <p className="text-xl font-bold text-ink">{g.level_name}</p>
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-tint text-2xl" aria-hidden="true">
+              {levelEmoji(g.level)}
+            </span>
+            <div>
+              <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
+                Level {g.level + 1}
+              </p>
+              <p className="text-xl font-bold text-ink">{g.level_name}</p>
+            </div>
           </div>
           <Badge tone="accent" className="text-sm">
             <Icon name="flame" className="h-4 w-4" />
@@ -155,6 +163,10 @@ export function StudentProgressPage() {
           <p className="text-xs text-ink-muted">longest streak</p>
         </Card>
       </div>
+
+      <LevelJourney g={g} />
+
+      <WeeklyGoals g={g} />
 
       {/* Self-comparison bars (CSS only) */}
       <Card>

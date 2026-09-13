@@ -16,6 +16,7 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
 import { CharacterAvatar } from '../../components/student/CharacterAvatar'
+import { LevelCard } from '../../components/student/LevelCard'
 import { streakTodayStatus } from '../../components/student/gamification'
 import {
   useGamificationQuery,
@@ -189,6 +190,8 @@ export function StudentHomePage() {
           </Link>
         </div>
       </div>
+
+      {g && <LevelCard g={g} />}
 
       {inProgress.length > 0 && (
         <Card className="flex flex-col items-start justify-between gap-4 border border-primary/15 sm:flex-row sm:items-center">
