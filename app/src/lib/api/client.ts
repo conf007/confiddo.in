@@ -8,7 +8,7 @@
  *  - 60 s timeout
  * Backend stays authoritative for all metrics/XP/readiness computation.
  */
-import { tokenStore } from '../auth/tokens'
+import { surfaceId, tokenStore } from '../auth/tokens'
 
 export const API_BASE_URL: string =
   import.meta.env.VITE_API_BASE_URL ??
@@ -43,6 +43,7 @@ interface RequestOptions {
 /** WS-D refresh-token rotation capability (backend token_service.ROTATION_CAPABILITY). */
 export const ROTATION_CAPABILITY = 'refresh-rotation'
 export const CLIENT_LABEL = 'web'
+export const SURFACE_KIND = 'web'
 
 const TIMEOUT_MS = 60_000
 const GET_RETRIES = 3
@@ -160,6 +161,8 @@ export async function api<T = unknown>(
       if (body !== undefined) headers['Content-Type'] = 'application/json'
       if (auth && tokenStore.access) {
         headers['Authorization'] = `Bearer ${tokenStore.access}`
+        headers['X-Surface-Id'] = surfaceId()
+        headers['X-Surface-Kind'] = SURFACE_KIND
       }
       const res = await fetch(url, {
         method,

@@ -24,6 +24,7 @@ import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
+import { DeviceSwitchBadge } from '../../components/teacher/DeviceSwitchBadge'
 import { ErrorState, LoadingState } from '../../components/teacher/PageState'
 import { LevelPicker } from '../../components/teacher/LevelPicker'
 import { ReadinessChip } from '../../components/teacher/ReadinessChip'
@@ -108,8 +109,9 @@ function SuggestionRow({
     <Card>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink">
+          <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink">
             {suggestion.student_first_name}
+            <DeviceSwitchBadge count={suggestion.device_switches} />
           </p>
           <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-ink-muted">
             {suggestion.previous_level_display && (

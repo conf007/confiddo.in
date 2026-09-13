@@ -17,6 +17,7 @@ import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
 import { Icon } from '../../components/icons'
+import { DeviceSwitchBadge } from '../../components/teacher/DeviceSwitchBadge'
 import { ErrorState, LoadingState } from '../../components/teacher/PageState'
 import { teacherKeys } from '../../components/teacher/hooks'
 import {
@@ -231,10 +232,13 @@ export function TestDetailPage() {
                   {a.in_progress.map((s) => (
                     <li
                       key={s.id}
-                      className="flex items-center justify-between rounded-lg bg-surface px-3 py-2 text-sm"
+                      className="flex items-center justify-between gap-2 rounded-lg bg-surface px-3 py-2 text-sm"
                     >
-                      <span className="text-ink-soft">{s.full_name}</span>
-                      <span className="text-xs text-ink-muted">
+                      <span className="flex min-w-0 flex-wrap items-center gap-1.5 text-ink-soft">
+                        {s.full_name}
+                        <DeviceSwitchBadge count={s.device_switches} />
+                      </span>
+                      <span className="shrink-0 text-xs text-ink-muted">
                         Q{s.current_question_number}/{s.total_questions}
                       </span>
                     </li>
@@ -252,10 +256,13 @@ export function TestDetailPage() {
                   {a.completed.map((s) => (
                     <li
                       key={s.id}
-                      className="flex items-center justify-between rounded-lg bg-success-tint/60 px-3 py-2 text-sm"
+                      className="flex items-center justify-between gap-2 rounded-lg bg-success-tint/60 px-3 py-2 text-sm"
                     >
-                      <span className="text-ink-soft">{s.full_name}</span>
-                      <Icon name="check" className="h-4 w-4 text-success" />
+                      <span className="flex min-w-0 flex-wrap items-center gap-1.5 text-ink-soft">
+                        {s.full_name}
+                        <DeviceSwitchBadge count={s.device_switches} />
+                      </span>
+                      <Icon name="check" className="h-4 w-4 shrink-0 text-success" />
                     </li>
                   ))}
                   {a.completed.length === 0 && (

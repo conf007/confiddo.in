@@ -24,12 +24,8 @@ import { Spinner } from '../../components/ui/Spinner'
 import { ProgressBar } from '../../components/student/ProgressBar'
 import { useGamificationQuery } from '../../components/student/hooks'
 import { friendlyError } from '../../lib/api/errors'
-import {
-  LEVEL_NAMES,
-  LEVEL_THRESHOLDS,
-  READINESS_DISPLAY_NAMES,
-  nextLevelPoints,
-} from '../../lib/parity'
+import { READINESS_DISPLAY_NAMES } from '../../lib/parity'
+import { levelProgressFrom, streakTodayStatus } from '../../components/student/gamification'
 
 const READINESS_LADDER = [
   { word: READINESS_DISPLAY_NAMES.avoidant, hint: 'Every journey starts somewhere' },
@@ -92,10 +88,8 @@ export function StudentProgressPage() {
     )
   }
 
-  const next = nextLevelPoints(g.total_points)
-  const currentFloor = LEVEL_THRESHOLDS[g.level] ?? 0
-  const levelProgress =
-    next === null ? 1 : (g.total_points - currentFloor) / (next - currentFloor)
+  const { progress: levelProgress, toNext } = levelProgressFrom(g)
+  const today = streakTodayStatus(g)
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -119,7 +113,7 @@ export function StudentProgressPage() {
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-              Level {g.level + 1} of {LEVEL_NAMES.length}
+              Level {g.level + 1}
             </p>
             <p className="text-xl font-bold text-ink">{g.level_name}</p>
           </div>
@@ -130,9 +124,9 @@ export function StudentProgressPage() {
         </div>
         <ProgressBar value={levelProgress} tone="accent" label="Progress to next level" />
         <p className="mt-2 text-center text-xs text-ink-muted">
-          {next === null
-            ? 'Galaxy Master — the very top. Incredible.'
-            : `${(next - g.total_points).toLocaleString()} XP to ${LEVEL_NAMES[g.level + 1]}`}
+          {toNext === null
+            ? `${g.level_name} — the very top. Incredible.`
+            : `${toNext.toLocaleString()} XP to the next level`}
         </p>
       </Card>
 
@@ -144,6 +138,9 @@ export function StudentProgressPage() {
           </span>
           <p className="text-2xl font-bold text-ink">{g.current_streak}</p>
           <p className="text-xs text-ink-muted">day streak</p>
+          <p className="mt-1.5 text-xs text-ink-soft" data-testid="streak-today">
+            {today.label}
+          </p>
           {g.current_streak >= 7 && (
             <Badge tone="accent" className="mt-2">
               1.5x XP active!

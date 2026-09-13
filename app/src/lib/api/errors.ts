@@ -40,6 +40,12 @@ export function friendlyError(e: unknown, fallback = FALLBACK): string {
     case 'RESEND_FAILED':
     case 'RESET_FAILED':
       return e.message || 'That code didn’t work. Please try again.'
+    case 'CHARACTER_LOCKED':
+      return e.message || 'This character is not unlocked yet.'
+    case 'SESSION_LOCKED_OTHER_SURFACE':
+      return 'This test is open on another device.'
+    case 'SESSION_NOT_IN_PROGRESS':
+      return 'This test session is no longer active.'
     default:
       break
   }

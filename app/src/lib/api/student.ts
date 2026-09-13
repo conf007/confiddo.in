@@ -74,12 +74,6 @@ export function getStudentProfile(): Promise<StudentProfileData> {
   return apiData('/student/profile')
 }
 
-// ── Character (PUT /student/character?character_id=..., :146-173) ────
-// NOTE: character_id travels as a QUERY PARAM, not a body (matches the
-// Flutter client, api_service.dart:156). The server validates the ID against
-// the 18-name catalog but does NOT verify XP — the client must enforce the
-// unlock gate (ARCHITECTURE.md §9.5) via src/lib/parity/characters.ts.
-
 export function updateCharacter(
   characterId: string,
 ): Promise<{ selected_character: string; message: string }> {

@@ -24,6 +24,7 @@ export interface CharacterAvatarProps {
   /** soft glow ring for the equipped/unlocked hero treatment */
   glow?: boolean
   className?: string
+  'data-testid'?: string
 }
 
 export function CharacterAvatar({
@@ -32,6 +33,7 @@ export function CharacterAvatar({
   locked = false,
   glow = false,
   className = '',
+  'data-testid': testId,
 }: CharacterAvatarProps) {
   const character = getCharacter(characterId)
   const tint = locked
@@ -40,6 +42,8 @@ export function CharacterAvatar({
   return (
     <span
       aria-hidden="true"
+      data-testid={testId}
+      data-character={character.id}
       className={[
         'inline-flex shrink-0 items-center justify-center rounded-full font-semibold select-none',
         sizeClassName,

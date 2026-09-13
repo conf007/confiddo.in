@@ -33,6 +33,8 @@ import { Card } from '../../components/ui/Card'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
 import { Sheet } from '../../components/student/Sheet'
+import { SessionLockGate } from '../../components/student/SessionLockGate'
+import { ApiError } from '../../lib/api/client'
 import { friendlyError } from '../../lib/api/errors'
 import {
   getHint,
@@ -53,6 +55,7 @@ import {
   type TrackedSession,
 } from './session/tracker'
 import { useAppSwitchTracking } from './session/useAppSwitches'
+import { useSessionLease } from './session/useSessionLease'
 
 type Phase =
   | 'answering'
@@ -106,6 +109,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   }, [])
 
   useAppSwitchTracking(sid, true)
+  const lease = useSessionLease(sid, true)
 
   // WS-E: one bundle fetch per session instead of one GET per question; the server creates
   // the attempt row when we report the question as viewed (markQuestionsViewed below).
@@ -113,7 +117,12 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
     queryKey: ['student', 'session', sid, 'bundle'],
     queryFn: () => getSessionBundle(sid),
     staleTime: Infinity,
+    retry: (count, err) => !(err instanceof ApiError && err.status > 0 && err.status < 500) && count < 1,
   })
+  const { handleError: handleLeaseError } = lease
+  useEffect(() => {
+    if (bundleQuery.error) handleLeaseError(bundleQuery.error)
+  }, [bundleQuery.error, handleLeaseError])
   const questionQuery = {
     data: bundleQuery.data
       ? {
@@ -127,9 +136,26 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   }
   useEffect(() => {
     if (!bundleQuery.data) return
-    const v = bundleQuery.data.session.version ?? undefined
+    const { session, questions, attempts } = bundleQuery.data
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot sync of the server version into the tracker
-    setTracked((prev) => (prev ? setVersion(prev, v) : prev))
+    setTracked((prev) => {
+      if (!prev) return prev
+      let next = setVersion(prev, session.version ?? undefined)
+      for (const q of questions) {
+        const a = attempts[String(q.question_number)]
+        if (!a?.answered || next.questions[q.question_number]?.answered) continue
+        next = upsertQuestion(next, q.question_number, {
+          questionId: q.id,
+          answered: true,
+          isCorrect: a.is_correct ?? undefined,
+          selectedOptionId: a.selected_option_id ?? undefined,
+          hintViewed: a.hints_used > 0,
+          solutionViewed: a.solution_viewed,
+          submissions: 1,
+        })
+      }
+      return next
+    })
     void markQuestionsViewed(sid, [number]).catch(() => {
       /* best-effort: the submit path creates the row anyway */
     })
@@ -211,6 +237,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
       }
     },
     onError: (e) => {
+      if (lease.handleError(e)) return
       const conflict = versionConflictOf(e)
       if (conflict) resync(conflict)
       else setActionError(friendlyError(e))
@@ -227,7 +254,9 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
       setHintOpen(true)
       if (question) updateQuestion({ questionId: question.id, hintViewed: true })
     },
-    onError: (e) => setActionError(friendlyError(e)),
+    onError: (e) => {
+      if (!lease.handleError(e)) setActionError(friendlyError(e))
+    },
   })
 
   const persistence = useMutation({
@@ -237,6 +266,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
     },
     onSuccess: (res) => setTracked((prev) => (prev ? setVersion(prev, res.version) : prev)),
     onError: (e) => {
+      if (lease.handleError(e)) return
       const conflict = versionConflictOf(e)
       if (conflict) resync(conflict)
     },
@@ -252,8 +282,19 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
       setPhase('solution')
       if (question) updateQuestion({ questionId: question.id, solutionViewed: true })
     },
-    onError: (e) => setActionError(friendlyError(e)),
+    onError: (e) => {
+      if (!lease.handleError(e)) setActionError(friendlyError(e))
+    },
   })
+
+  const lockGate = (
+    <SessionLockGate
+      lock={lease.lock}
+      onTakeOver={() => lease.takeOver.mutate()}
+      taking={lease.takeOver.isPending}
+      error={lease.takeOver.isError && !lease.lock?.taken_over ? friendlyError(lease.takeOver.error) : null}
+    />
+  )
 
   // ── Actions ─────────────────────────────────────────────────────────
 
@@ -296,6 +337,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   }
 
   if (!question) {
+    if (lease.lock) return lockGate
     return (
       <div className="py-20 text-center">
         <p className="text-sm text-ink-muted">{friendlyError(questionQuery.error)}</p>
@@ -543,6 +585,8 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
         onClose={() => setReportOpen(false)}
         questionId={question.id}
       />
+
+      {lockGate}
     </div>
   )
 }

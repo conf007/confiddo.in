@@ -4,8 +4,6 @@
  * - Locked: single muted gray treatment, lock overlay, XP needed, neutral
  *   gray progress bar (CLAUDE.md §3 locked state).
  * - Unlocked: tinted avatar + soft glow, XP in accent.
- * - Select: PUT /student/character (query param). The CLIENT enforces the XP
- *   gate — the server only validates the ID (ARCHITECTURE.md §9.5).
  */
 import { useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -26,6 +24,7 @@ import {
   useGamificationQuery,
   useStudentProfileQuery,
 } from '../../components/student/hooks'
+import { ApiError } from '../../lib/api/client'
 import { friendlyError } from '../../lib/api/errors'
 import { updateCharacter } from '../../lib/api/student'
 import { CHARACTERS, type CharacterInfo, type CharacterRarity } from '../../lib/parity'
@@ -56,7 +55,12 @@ export function CharactersPage() {
       setDetail(null)
       void qc.invalidateQueries({ queryKey: studentKeys.profile })
     },
-    onError: (e) => setSelectError(friendlyError(e)),
+    onError: (e) => {
+      setSelectError(friendlyError(e))
+      if (e instanceof ApiError && e.code === 'CHARACTER_LOCKED') {
+        void qc.invalidateQueries({ queryKey: studentKeys.gamification })
+      }
+    },
   })
 
   const sections = useMemo(

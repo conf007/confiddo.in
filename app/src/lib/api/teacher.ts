@@ -191,6 +191,7 @@ export interface StudentSuggestion {
   final_level_display?: string
   previous_level: string | null
   previous_level_display: string | null
+  device_switches?: number
   worksheet_count: number
   /**
    * Metric-derived 0-100 composite (green=100/yellow=50/red=0 averaged,
@@ -605,7 +606,11 @@ export interface AttemptStatusStudent {
   current_question_number?: number
   total_questions?: number
   percent?: number
+  device_switches?: number
+  active_surface_kind?: 'app' | 'web' | 'app-legacy' | null
 }
+
+export const DEVICE_SWITCH_FLAG_THRESHOLD = 2
 
 export interface TestAttemptStatus {
   test_id: string
