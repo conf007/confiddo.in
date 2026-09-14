@@ -9,6 +9,7 @@ const WEB_URL = process.env.E2E_WEB_URL ?? 'http://127.0.0.1:4173'
 
 export default defineConfig({
   testDir: './e2e/specs',
+  testIgnore: process.env.E2E_ADMIN ? [] : ['**/admin-panel.spec.ts'],
   timeout: 90_000,
   expect: { timeout: 10_000 },
   retries: 1,                                    // one retry; traces/screenshots explain the first failure

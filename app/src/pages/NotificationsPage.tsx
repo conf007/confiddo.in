@@ -3,6 +3,7 @@
  * mark all read; offset paging via "Load more").
  */
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -11,6 +12,7 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState, LoadingState } from '../components/teacher/PageState'
 import { formatDateTime } from '../components/parent/format'
 import { useAuth } from '../lib/auth/AuthContext'
+import { notificationTarget } from '../lib/api/notificationTarget'
 import {
   getNotifications,
   markAllNotificationsRead,
@@ -24,6 +26,7 @@ const PAGE_SIZE = 20
 export function NotificationsPage() {
   const { role } = useAuth()
   const qc = useQueryClient()
+  const navigate = useNavigate()
   const [limit, setLimit] = useState(PAGE_SIZE)
 
   const q = useQuery({
@@ -86,7 +89,12 @@ export function NotificationsPage() {
             <NotificationRow
               key={n.id}
               n={n}
-              onRead={() => !n.is_read && markOne.mutate(n.id)}
+              target={notificationTarget(role, n)}
+              onOpen={() => {
+                if (!n.is_read) markOne.mutate(n.id)
+                const to = notificationTarget(role, n)
+                if (to) void navigate(to)
+              }}
             />
           ))}
         </ul>
@@ -103,10 +111,10 @@ export function NotificationsPage() {
   )
 }
 
-function NotificationRow({ n, onRead }: { n: AppNotification; onRead: () => void }) {
+function NotificationRow({ n, target, onOpen }: { n: AppNotification; target: string | null; onOpen: () => void }) {
   return (
     <li>
-      <button type="button" onClick={onRead} className="block w-full text-left">
+      <button type="button" onClick={onOpen} className="block w-full text-left" data-target={target ?? undefined}>
         <Card
           className={[
             'p-4 transition-shadow hover:shadow-md',
@@ -119,7 +127,10 @@ function NotificationRow({ n, onRead }: { n: AppNotification; onRead: () => void
               <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{n.body}</p>
               <p className="mt-1.5 text-xs text-ink-muted">{formatDateTime(n.created_at)}</p>
             </div>
-            {!n.is_read && <Badge tone="primary">New</Badge>}
+            <span className="flex shrink-0 items-center gap-2">
+              {!n.is_read && <Badge tone="primary">New</Badge>}
+              {target && <Badge tone="outline">Open</Badge>}
+            </span>
           </div>
         </Card>
       </button>

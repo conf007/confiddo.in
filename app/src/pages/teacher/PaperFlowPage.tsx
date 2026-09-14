@@ -43,6 +43,23 @@ import {
 import { friendlyError } from '../../lib/api/errors'
 
 const TARGET_QUESTIONS = 10 // mirrors create_practice_screen.dart:219
+
+function draftToText(
+  title: string,
+  subject: string,
+  className: string | undefined,
+  questions: PaperQuestion[],
+): string {
+  const lines = [title, `${subject}${className ? ` • ${className}` : ''} • ${questions.length} questions`, '']
+  questions.forEach((q, i) => {
+    lines.push(`Q${i + 1}. [${q.marks} mark${q.marks === 1 ? '' : 's'}] ${q.text}`)
+    for (const [j, opt] of (q.options ?? []).entries()) {
+      lines.push(`  ${String.fromCharCode(97 + j)}) ${opt}`)
+    }
+    lines.push('')
+  })
+  return lines.join('\n')
+}
 const DIFFICULTIES: { value: PaperDifficulty; label: string; hint: string }[] = [
   { value: 'Easy', label: 'Easy', hint: 'Confidence building' },
   { value: 'Mixed', label: 'Mixed', hint: 'Balanced practice' },
@@ -147,6 +164,7 @@ export function PaperFlowPage() {
   const [bankExhausted, setBankExhausted] = useState(false)
   const [published, setPublished] = useState<PublishResult | null>(null)
   const [lastConfig, setLastConfig] = useState<GenerateAndDraftConfig | null>(null)
+  const [copied, setCopied] = useState<'done' | 'failed' | null>(null)
 
   const classes = useQuery({ queryKey: teacherKeys.classes, queryFn: getTeacherClasses })
   const chapters = useQuery({
@@ -276,6 +294,22 @@ export function PaperFlowPage() {
 
   const dist = distributionFor(difficulty, TARGET_QUESTIONS)
 
+  const draftTitle = draft?.title || lastConfig?.title || 'Practice test'
+  const draftSubject = draft?.config?.subject_name ?? lastConfig?.subject_name ?? 'Mathematics'
+  const draftClassName = draft?.config?.class_name ?? selectedClass?.name
+
+  const copyPaper = async () => {
+    if (!draft) return
+    const text = draftToText(draftTitle, draftSubject, draftClassName, slotQuestions)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied('done')
+    } catch {
+      setCopied('failed')
+    }
+    window.setTimeout(() => setCopied(null), 2500)
+  }
+
   // ── Published success screen ──────────────────────────────────────
   if (published) {
     return (
@@ -317,11 +351,16 @@ export function PaperFlowPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-ink">Create a test</h1>
-        <p className="mt-1 text-sm text-ink-muted">
-          Build a 10-question practice test from your school's question bank.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Create a test</h1>
+          <p className="mt-1 text-sm text-ink-muted">
+            Build a 10-question practice test from your school's question bank.
+          </p>
+        </div>
+        <Link to="/teacher/paper/exam" className="text-xs font-medium text-primary hover:text-primary-light">
+          Build a full exam paper instead
+        </Link>
       </div>
       <StepDots step={step} />
 
@@ -543,12 +582,10 @@ export function PaperFlowPage() {
       {step === 3 && draft && (
         <Card className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-ink">
-              {draft.title || 'Practice test'}
-            </h2>
+            <h2 className="text-lg font-semibold text-ink">{draftTitle}</h2>
             <p className="mt-1 text-sm text-ink-muted">
-              {draft.config?.class_name && `${draft.config.class_name} • `}
-              {draft.config?.subject_name ?? 'Mathematics'} •{' '}
+              {draftClassName && `${draftClassName} • `}
+              {draftSubject} •{' '}
               {draft.review_state.slot_question_ids.length} questions
             </p>
           </div>
@@ -561,6 +598,9 @@ export function PaperFlowPage() {
             <p className="text-sm text-band-red">{friendlyError(publish.error)}</p>
           )}
           <div className="flex flex-wrap justify-end gap-3">
+            <Button variant="ghost" onClick={copyPaper}>
+              {copied === 'done' ? 'Copied' : copied === 'failed' ? 'Couldn’t copy' : 'Copy as text'}
+            </Button>
             <Button variant="ghost" onClick={() => setStep(2)}>
               Back to questions
             </Button>

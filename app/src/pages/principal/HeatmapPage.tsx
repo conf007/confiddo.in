@@ -63,7 +63,7 @@ export function HeatmapPage() {
                       <td key={s} className="text-center">
                         {c ? (
                           <Link
-                            to={`/principal/classes/${c.class_id}`}
+                            to={`/principal/classes/${c.class_id}?subject=${encodeURIComponent(s)}`}
                             title={`${cls} · ${s}${c.teacher_name ? ` · ${c.teacher_name}` : ''}`}
                             className={[
                               'block rounded-lg px-2 py-3 text-xs font-semibold transition-opacity hover:opacity-80',

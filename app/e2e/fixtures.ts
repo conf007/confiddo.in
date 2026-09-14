@@ -3,7 +3,9 @@ import { expect, type Page } from '@playwright/test'
 
 export interface World {
   student: { username: string; password: string; id: string }
-  tests: { core: string; phone: string; switch: string; both: string }
+  teacher: { username: string; password: string }
+  class_id: string
+  tests: { core: string; phone: string; switch: string; both: string; review: string }
 }
 
 const PROD_HOST = 'conf007--confiddo-backend'
@@ -20,13 +22,32 @@ export function apiBase(): string {
   return `${process.env.E2E_BASE_URL ?? 'http://127.0.0.1:8765'}/v1`
 }
 
-export async function loginAsStudent(page: Page, w = world()) {
+async function openRoleLogin(page: Page, role: RegExp) {
   await page.goto('/app/login')
-  await page.getByRole('button', { name: /i'm a student/i }).click()
+  await page.getByRole('heading', { name: 'How are you using Confiddo?' }).waitFor()
+  const onboarding = page.getByTestId('onboarding')
+  if (await onboarding.isVisible()) {
+    await expect(onboarding).toContainText('Built for You, Not for Your Marks')
+    await page.getByRole('button', { name: 'Skip' }).click()
+    await expect(onboarding).toHaveCount(0)
+  }
+  await page.getByRole('button', { name: role }).click()
+}
+
+export async function loginAsStudent(page: Page, w = world()) {
+  await openRoleLogin(page, /i'm a student/i)
   await page.getByPlaceholder('Enter your username').fill(w.student.username)
   await page.getByPlaceholder('Enter your password').fill(w.student.password)
   await page.getByRole('button', { name: 'Log In' }).click()
   await expect(page).toHaveURL(/\/app\/student/)
+}
+
+export async function loginAsTeacher(page: Page, w = world()) {
+  await openRoleLogin(page, /i'm a teacher/i)
+  await page.getByPlaceholder('Enter your username').fill(w.teacher.username)
+  await page.getByPlaceholder('Enter your password').fill(w.teacher.password)
+  await page.getByRole('button', { name: 'Log In' }).click()
+  await expect(page).toHaveURL(/\/app\/teacher/)
 }
 
 export async function studentAuth(page: Page) {

@@ -33,6 +33,7 @@ import { teacherKeys } from '../../components/teacher/hooks'
 import {
   bulkValidateSuggestions,
   completeReviewSession,
+  getBulkValidationOverview,
   getClassSuggestions,
   getSuggestionExplanation,
   startReviewSession,
@@ -91,13 +92,107 @@ function Explanation({ suggestionId }: { suggestionId: string }) {
   )
 }
 
+function BulkOverview({
+  classId,
+  pendingIds,
+  busy,
+  onAgree,
+  onCancel,
+}: {
+  classId: string
+  pendingIds: string[]
+  busy: boolean
+  onAgree: (ids: string[]) => void
+  onCancel: () => void
+}) {
+  const overview = useQuery({
+    queryKey: teacherKeys.bulkValidation(classId),
+    queryFn: () => getBulkValidationOverview(classId),
+  })
+  if (overview.isLoading) {
+    return (
+      <Card data-testid="bulk-overview">
+        <p className="text-sm text-ink-muted">Checking what a bulk agree would do…</p>
+      </Card>
+    )
+  }
+  const o = overview.data
+  if (!o) {
+    return (
+      <Card data-testid="bulk-overview" className="space-y-3">
+        <p className="text-sm text-band-red">{friendlyError(overview.error)}</p>
+        <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
+      </Card>
+    )
+  }
+  const pending = new Set(pendingIds)
+  const unchanged = o.no_change_suggestions.filter((s) => pending.has(s.suggestion_id))
+  const changed = o.changed_suggestions.filter((s) => pending.has(s.suggestion_id))
+  return (
+    <Card data-testid="bulk-overview" className="space-y-4 border border-accent/20 bg-accent-tint/40">
+      <div>
+        <h2 className="text-sm font-semibold text-ink">Before you agree with everyone</h2>
+        <p className="mt-0.5 text-xs text-ink-muted">
+          {unchanged.length} suggestion{unchanged.length === 1 ? '' : 's'} keep the current level;{' '}
+          {changed.length} propose a change.
+        </p>
+      </div>
+      {unchanged.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-ink-soft">No change</p>
+          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+            {unchanged.map((s) => (
+              <li key={s.suggestion_id}>
+                <Badge tone="neutral">{s.student_first_name} · {s.current_level_display}</Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {changed.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-ink-soft">Level changes — worth a look</p>
+          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+            {changed.map((s) => (
+              <li key={s.suggestion_id}>
+                <Badge tone="accent">
+                  {s.student_first_name} · {s.current_level_display} → {s.suggested_level_display}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {unchanged.length > 0 && (
+          <Button
+            size="sm"
+            loading={busy}
+            onClick={() => onAgree(unchanged.map((s) => s.suggestion_id))}
+          >
+            Agree with {unchanged.length} unchanged
+          </Button>
+        )}
+        <Button size="sm" variant="secondary" loading={busy} onClick={() => onAgree(pendingIds)}>
+          Agree with all remaining ({pendingIds.length})
+        </Button>
+        <Button size="sm" variant="ghost" onClick={onCancel} disabled={busy}>
+          Cancel
+        </Button>
+      </div>
+    </Card>
+  )
+}
+
 function SuggestionRow({
   suggestion,
   onValidate,
+  onUndo,
   busy,
 }: {
   suggestion: StudentSuggestion
   onValidate: (action: 'agree' | 'adjust', level?: ReadinessCode) => void
+  onUndo: () => void
   busy: boolean
 }) {
   const [adjusting, setAdjusting] = useState(false)
@@ -135,11 +230,16 @@ function SuggestionRow({
           </p>
         </div>
         {validated ? (
-          <Badge tone="success">
-            <Icon name="check" className="h-3 w-3" />
-            {suggestion.final_level_display ?? suggestion.suggested_level_display}
-            {suggestion.validation_action === 'adjust' && ' (adjusted)'}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge tone="success">
+              <Icon name="check" className="h-3 w-3" />
+              {suggestion.final_level_display ?? suggestion.suggested_level_display}
+              {suggestion.validation_action === 'adjust' && ' (adjusted)'}
+            </Badge>
+            <Button size="sm" variant="ghost" onClick={onUndo} disabled={busy}>
+              Undo
+            </Button>
+          </div>
         ) : (
           <div className="flex gap-2">
             <Button
@@ -215,6 +315,8 @@ export function ReviewQueuePage() {
   const queryClient = useQueryClient()
   const [completed, setCompleted] = useState<CompleteReviewResult | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [reverted, setReverted] = useState<ReadonlySet<string>>(() => new Set())
+  const [showBulk, setShowBulk] = useState(false)
   // Per-decision timing for time_spent_ms (validate query param, teacher.py:165).
   // Initialized in an effect (Date.now is impure during render).
   const lastActionAt = useRef<number | null>(null)
@@ -260,12 +362,29 @@ export function ReviewQueuePage() {
       return validateSuggestion(suggestionId, action, level, elapsed)
     },
     onSettled: () => setBusyId(null),
-    onSuccess: invalidate,
+    onSuccess: (_data, vars) => {
+      setReverted((prev) => {
+        if (!prev.has(vars.suggestionId)) return prev
+        const next = new Set(prev)
+        next.delete(vars.suggestionId)
+        return next
+      })
+      invalidate()
+    },
   })
 
   const bulk = useMutation({
     mutationFn: (ids: string[]) => bulkValidateSuggestions(classId, ids, 'agree'),
-    onSuccess: invalidate,
+    onSuccess: (_data, ids) => {
+      setReverted((prev) => {
+        if (prev.size === 0) return prev
+        const next = new Set(prev)
+        for (const id of ids) next.delete(id)
+        return next
+      })
+      setShowBulk(false)
+      invalidate()
+    },
   })
 
   const complete = useMutation({
@@ -331,7 +450,9 @@ export function ReviewQueuePage() {
     )
   }
 
-  const all = suggestions.data.suggestions
+  const all = suggestions.data.suggestions.map((s) =>
+    reverted.has(s.suggestion_id) ? { ...s, validation_status: 'pending' as const } : s,
+  )
   const pending = all.filter((s) => s.validation_status === 'pending')
   const done = all.length - pending.length
 
@@ -370,13 +491,8 @@ export function ReviewQueuePage() {
               {all.length} reviewed
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              {pending.length > 0 && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  loading={bulk.isPending}
-                  onClick={() => bulk.mutate(pending.map((s) => s.suggestion_id))}
-                >
+              {pending.length > 0 && !showBulk && (
+                <Button size="sm" variant="secondary" onClick={() => setShowBulk(true)}>
                   Agree with all remaining ({pending.length})
                 </Button>
               )}
@@ -392,6 +508,15 @@ export function ReviewQueuePage() {
               )}
             </div>
           </Card>
+          {showBulk && pending.length > 0 && (
+            <BulkOverview
+              classId={classId}
+              pendingIds={pending.map((s) => s.suggestion_id)}
+              busy={bulk.isPending}
+              onAgree={(ids) => bulk.mutate(ids)}
+              onCancel={() => setShowBulk(false)}
+            />
+          )}
           {(validate.error || bulk.error || complete.error) && (
             <p className="text-sm text-band-red">
               {friendlyError(validate.error ?? bulk.error ?? complete.error)}
@@ -408,6 +533,7 @@ export function ReviewQueuePage() {
                   setBusyId(s.suggestion_id)
                   validate.mutate({ suggestionId: s.suggestion_id, action, level })
                 }}
+                onUndo={() => setReverted((prev) => new Set(prev).add(s.suggestion_id))}
               />
             ))}
           </div>

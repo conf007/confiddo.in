@@ -38,6 +38,7 @@ import {
 } from './session/tracker'
 import { useAppSwitchTracking } from './session/useAppSwitches'
 import { useSessionLease } from './session/useSessionLease'
+import { flushEvents } from './session/events'
 
 export function ReviewPage() {
   const { sid = '' } = useParams()
@@ -51,8 +52,9 @@ export function ReviewPage() {
   const lease = useSessionLease(sid, true)
 
   const finish = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!tracked) throw new Error('session missing')
+      await flushEvents(sid)
       return completeSession(sid, {
         skipped_count: skippedCount(tracked),
         incorrect_count: incorrectCount(tracked),

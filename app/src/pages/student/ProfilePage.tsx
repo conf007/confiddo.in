@@ -158,6 +158,13 @@ export function StudentProfilePage() {
           My past tests
         </Link>
         <Link
+          to="/about"
+          className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50"
+        >
+          <Icon name="alert" className="h-5 w-5 text-primary" />
+          About Confiddo
+        </Link>
+        <Link
           to="/student/xp-rules"
           className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50"
         >

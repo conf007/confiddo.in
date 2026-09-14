@@ -35,13 +35,102 @@ import {
   getInterventions,
   getMultiSubjectView,
   getStudentFlags,
+  getStudentJourney,
   getStudentTrend,
   getTeacherNotes,
   sendParentMessage,
   type FlagCategory,
   type ParentMessageTemplate,
+  type StudentJourney,
 } from '../../lib/api/teacher'
 import { friendlyError } from '../../lib/api/errors'
+import { readinessDisplayName } from '../../lib/parity'
+
+function JourneyCard({ journey }: { journey: StudentJourney }) {
+  const j = journey.journey
+  const subject = j.subject
+  const weeks = subject?.weeks ?? []
+  return (
+    <Card data-testid="student-journey">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold text-ink">Journey in {journey.subject}</h2>
+        <Badge tone="neutral">{journey.class_name}</Badge>
+      </div>
+      {weeks.length === 0 ? (
+        <p className="mt-3 text-sm text-ink-muted">
+          No journey yet — it builds week by week as tests are reviewed.
+        </p>
+      ) : (
+        <>
+          <dl className="mt-4 grid grid-cols-3 gap-3 text-center">
+            <div className="rounded-xl bg-surface px-3 py-3">
+              <dt className="text-xs text-ink-muted">Weeks tracked</dt>
+              <dd className="mt-1 text-lg font-semibold text-ink">{j.summary_stats.weeks_tracked}</dd>
+            </div>
+            <div className="rounded-xl bg-surface px-3 py-3">
+              <dt className="text-xs text-ink-muted">Levels gained</dt>
+              <dd className="mt-1 text-lg font-semibold text-ink">
+                {j.summary_stats.levels_gained > 0 ? `+${j.summary_stats.levels_gained}` : j.summary_stats.levels_gained}
+              </dd>
+            </div>
+            <div className="rounded-xl bg-surface px-3 py-3">
+              <dt className="text-xs text-ink-muted">Now</dt>
+              <dd className="mt-1 text-sm font-semibold text-ink">
+                {j.summary_stats.current_avg_display ?? '—'}
+              </dd>
+            </div>
+          </dl>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="text-ink-muted">
+                  <th className="py-1.5 pr-3 font-medium">Week</th>
+                  <th className="py-1.5 pr-3 font-medium">{j.child_first_name}</th>
+                  <th className="py-1.5 font-medium">Class</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {weeks.map((w, i) => (
+                  <tr key={w.week_index}>
+                    <td className="py-2 pr-3 whitespace-nowrap text-ink-muted">
+                      {j.week_labels[i] ?? `W${w.week_index + 1}`}
+                    </td>
+                    <td className="py-2 pr-3">
+                      {w.child_level ? (
+                        <ReadinessChip level={w.child_level} />
+                      ) : (
+                        <span className="text-ink-muted">No practice</span>
+                      )}
+                    </td>
+                    <td className="py-2 text-ink-muted">
+                      {w.class_avg_level ? readinessDisplayName(w.class_avg_level) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+      {j.insights.length > 0 && (
+        <ul className="mt-4 space-y-2">
+          {j.insights.map((ins, i) => (
+            <li
+              key={i}
+              className={[
+                'flex items-start gap-2 rounded-xl px-4 py-3 text-xs leading-relaxed',
+                ins.type === 'positive' ? 'bg-success-tint text-success' : 'bg-band-yellow/10 text-band-yellow',
+              ].join(' ')}
+            >
+              <Icon name={ins.type === 'positive' ? 'check' : 'alert'} className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              {ins.message}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
+  )
+}
 
 const FLAG_LABELS: Record<FlagCategory, string> = {
   needs_conversation: 'Needs a conversation',
@@ -99,6 +188,11 @@ export function StudentDetailPage() {
     queryKey: teacherKeys.interventions(studentId),
     queryFn: () => getInterventions(studentId),
     enabled: !!studentId,
+  })
+  const journey = useQuery({
+    queryKey: teacherKeys.studentJourney(studentId, classId ?? ''),
+    queryFn: () => getStudentJourney(studentId, classId!),
+    enabled: !!studentId && !!classId,
   })
 
   // ── Note form ──────────────────────────────────────────────────────
@@ -176,10 +270,29 @@ export function StudentDetailPage() {
           Back
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-bold text-ink">{t.student_first_name}</h1>
+          <h1 className="text-2xl font-bold text-ink">
+            {journey.data?.student.full_name ?? t.student_first_name}
+          </h1>
           <ReadinessChip level={t.current_level} display={t.current_level_display} />
         </div>
+        {journey.data && (
+          <p className="mt-1 text-sm text-ink-muted">
+            Class {journey.data.student.class_grade}
+            {journey.data.student.section && ` • Section ${journey.data.student.section}`}
+            {' • '}{journey.data.class_name}
+          </p>
+        )}
       </div>
+
+      {classId && journey.isLoading && (
+        <p className="text-sm text-ink-muted">Loading journey…</p>
+      )}
+      {classId && !journey.isLoading && !journey.data && (
+        <p className="text-sm text-ink-muted">
+          {friendlyError(journey.error, 'Journey is unavailable right now.')}
+        </p>
+      )}
+      {journey.data && <JourneyCard journey={journey.data} />}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Trend — self-history only */}
