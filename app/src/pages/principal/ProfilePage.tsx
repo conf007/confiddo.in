@@ -1,5 +1,5 @@
 /** Principal profile: school info, email change (shared OTP card), logout. */
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
@@ -48,6 +48,11 @@ export function PrincipalProfilePage() {
         verify={verifyPrincipalEmailChange}
         onUpdated={() => qc.invalidateQueries({ queryKey: principalKeys.profile })}
       />
+      <Card padded={false}>
+        <Link to="/about" className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50">
+          About Confiddo
+        </Link>
+      </Card>
       <Button
         variant="danger"
         full

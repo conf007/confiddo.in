@@ -56,6 +56,8 @@ import {
 } from './session/tracker'
 import { useAppSwitchTracking } from './session/useAppSwitches'
 import { useSessionLease } from './session/useSessionLease'
+import { recordEvent } from './session/events'
+import { XpQuickGuide } from '../../components/student/XpQuickGuide'
 
 type Phase =
   | 'answering'
@@ -100,6 +102,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   const [reportOpen, setReportOpen] = useState(false)
   const [feedbackLine, setFeedbackLine] = useState('')
   const [actionError, setActionError] = useState<string | null>(null)
+  const [xpGuideOpen, setXpGuideOpen] = useState(false)
 
   // Per-question timer — this component remounts per question (key above),
   // so a mount-time effect stamps the start. tryAgain re-stamps on retry.
@@ -178,6 +181,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
       if (base.questions[number]) return base
       return upsertQuestion(base, number, { questionId: question.id })
     })
+    recordEvent(sid, 'question_rendered', question.id, { question_number: number })
   }, [question, number, sid])
 
   const updateQuestion = useCallback(
@@ -252,7 +256,10 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
     onSuccess: (res) => {
       setHintText(res.hint)
       setHintOpen(true)
-      if (question) updateQuestion({ questionId: question.id, hintViewed: true })
+      if (question) {
+        updateQuestion({ questionId: question.id, hintViewed: true })
+        recordEvent(sid, 'hint_viewed', question.id, { question_number: number })
+      }
     },
     onError: (e) => {
       if (!lease.handleError(e)) setActionError(friendlyError(e))
@@ -277,10 +284,13 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
       if (!question) throw new Error('no question')
       return getSolution(sid, question.id, afterCorrect)
     },
-    onSuccess: (res) => {
+    onSuccess: (res, afterCorrect) => {
       setSolutionText(res.solution)
       setPhase('solution')
-      if (question) updateQuestion({ questionId: question.id, solutionViewed: true })
+      if (question) {
+        updateQuestion({ questionId: question.id, solutionViewed: true })
+        recordEvent(sid, 'solution_viewed', question.id, { question_number: number, after_correct: afterCorrect })
+      }
     },
     onError: (e) => {
       if (!lease.handleError(e)) setActionError(friendlyError(e))
@@ -299,6 +309,7 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
   // ── Actions ─────────────────────────────────────────────────────────
 
   const goNext = () => {
+    if (question && phase === 'answering') recordEvent(sid, 'question_skipped', question.id, { question_number: number })
     if (isLast) void navigate(`/student/sessions/${sid}/review`)
     else void navigate(`/student/sessions/${sid}/q/${number + 1}`)
   }
@@ -368,6 +379,14 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
             <span className="hidden sm:inline">Save & exit</span>
           </Link>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setXpGuideOpen(true)}
+              className="inline-flex h-8 items-center gap-1 rounded-full bg-accent-tint px-2.5 text-xs font-semibold text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              aria-label="XP quick guide"
+            >
+              ⚡ XP
+            </button>
             {tracked?.isRevision && <Badge tone="primary">Revision</Badge>}
             {tracked?.isLate && <Badge tone="neutral">Late submission</Badge>}
             <Badge tone="neutral">
@@ -406,7 +425,14 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
                   role="radio"
                   aria-checked={isSelected}
                   disabled={answeredThisQuestion}
-                  onClick={() => setSelected(option.id)}
+                  onClick={() => {
+                    setSelected(option.id)
+                    recordEvent(sid, selected && selected !== option.id ? 'option_changed' : 'option_selected', question.id, {
+                      option_id: option.id,
+                      option_label: option.label,
+                      ...(selected && selected !== option.id ? { from_option_id: selected } : {}),
+                    })
+                  }}
                   className={[
                     'flex w-full items-start gap-3 rounded-2xl border-2 p-4 text-left transition-colors duration-150',
                     'min-h-12 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
@@ -585,6 +611,8 @@ function QuestionInner({ sid, number }: { sid: string; number: number }) {
         onClose={() => setReportOpen(false)}
         questionId={question.id}
       />
+
+      <XpQuickGuide open={xpGuideOpen} onClose={() => setXpGuideOpen(false)} />
 
       {lockGate}
     </div>

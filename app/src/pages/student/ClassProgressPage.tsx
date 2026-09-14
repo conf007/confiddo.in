@@ -11,6 +11,7 @@ import { xpToNextRank } from '../../components/student/galaxy'
 import { studentKeys } from '../../components/student/hooks'
 import { getClassRankings } from '../../lib/api/student'
 import { friendlyError } from '../../lib/api/errors'
+import { ShareActions } from '../../components/parent/ShareActions'
 
 function StatChip({ icon, value, label }: { icon: string; value: string; label: string }) {
   return (
@@ -78,6 +79,10 @@ export function ClassProgressPage() {
           <StatChip icon="🚀" value={`#${data.user_rank}`} label="your rank" />
           <StatChip icon="⚡" value={data.user_rank === 1 ? 'Top!' : `+${toRankUp} XP`} label="to rank up" />
         </div>
+        <ShareActions
+          className="mt-4 justify-center"
+          text={`🌌 I'm ${data.user_rank === 1 ? 'the Class Topper 🏆' : `Galaxy Rank #${data.user_rank}`} of ${data.total_students} in my class galaxy on Confiddo!`}
+        />
       </Card>
 
       <Card padded={false} className="divide-y divide-slate-100">

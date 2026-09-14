@@ -121,7 +121,6 @@ export function StudentHomePage() {
 
   const allTests = tests.data?.tests ?? []
   const inProgress = allTests.filter((t) => t.session_status === 'in_progress')
-  const completedCount = allTests.filter((t) => t.session_status === 'completed').length
   const firstName = profile.data?.full_name?.split(' ')[0]
   const character = profile.data ? getCharacter(profile.data.selected_character) : null
   const g = gamification.data
@@ -166,15 +165,13 @@ export function StudentHomePage() {
           </div>
         </div>
         <div className="flex gap-2">
-          {completedCount > 0 && (
-            <Link
-              to="/student/history"
-              className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"
-            >
-              <Icon name="clipboard" className="h-4 w-4" />
-              Past tests
-            </Link>
-          )}
+          <Link
+            to="/student/history"
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"
+          >
+            <Icon name="clipboard" className="h-4 w-4" />
+            Past tests
+          </Link>
           <Link
             to="/student/link-parent"
             className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"

@@ -22,6 +22,13 @@ export function apiBase(): string {
 
 export async function loginAsStudent(page: Page, w = world()) {
   await page.goto('/app/login')
+  await page.getByRole('heading', { name: 'How are you using Confiddo?' }).waitFor()
+  const onboarding = page.getByTestId('onboarding')
+  if (await onboarding.isVisible()) {
+    await expect(onboarding).toContainText('Built for You, Not for Your Marks')
+    await page.getByRole('button', { name: 'Skip' }).click()
+    await expect(onboarding).toHaveCount(0)
+  }
   await page.getByRole('button', { name: /i'm a student/i }).click()
   await page.getByPlaceholder('Enter your username').fill(w.student.username)
   await page.getByPlaceholder('Enter your password').fill(w.student.password)

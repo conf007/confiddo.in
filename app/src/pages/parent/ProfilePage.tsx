@@ -75,6 +75,13 @@ export function ParentProfilePage() {
         </Link>
       </Card>
 
+      <Card padded={false}>
+        <Link to="/about" className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50">
+          <Icon name="alert" className="h-5 w-5 text-primary" />
+          About Confiddo
+        </Link>
+      </Card>
+
       <Button
         full
         variant="ghost"

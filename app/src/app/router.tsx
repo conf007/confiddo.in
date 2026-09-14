@@ -51,6 +51,7 @@ const ClassProgressPage = lazy(() => import('../pages/student/ClassProgressPage'
 const LinkParentPage = lazy(() => import('../pages/student/LinkParentPage').then((m) => ({ default: m.LinkParentPage })))
 const StudentProfilePage = lazy(() => import('../pages/student/ProfilePage').then((m) => ({ default: m.StudentProfilePage })))
 const XpRulesPage = lazy(() => import('../pages/student/XpRulesPage').then((m) => ({ default: m.XpRulesPage })))
+const AboutPage = lazy(() => import('../pages/AboutPage').then((m) => ({ default: m.AboutPage })))
 const HistoryPage = lazy(() => import('../pages/student/HistoryPage').then((m) => ({ default: m.HistoryPage })))
 const ClassListPage = lazy(() => import('../pages/teacher/ClassListPage').then((m) => ({ default: m.ClassListPage })))
 const ClassOverviewPage = lazy(() => import('../pages/teacher/ClassOverviewPage').then((m) => ({ default: m.ClassOverviewPage })))
@@ -92,6 +93,7 @@ const PrincipalProfilePage = lazy(() => import('../pages/principal/ProfilePage')
 export const router = createBrowserRouter(
   [
     { path: '/', element: <RootRedirect /> },
+    { path: '/about', element: lz(AboutPage) },
 
     // Public auth shell (navy split panel)
     {

@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { Icon } from '../../components/icons'
 import { Logo } from '../../components/Logo'
 import { NotificationBell } from '../../components/NotificationBell'
+import { OfflineBanner } from '../../components/OfflineBanner'
 import { UserMenu } from '../../components/UserMenu'
 import { XpChip } from '../../components/student/XpChip'
 import { STUDENT_TABS } from '../nav'
@@ -47,6 +48,7 @@ export function StudentLayout() {
           </div>
         </div>
       </header>
+      <OfflineBanner />
 
       <main className="mx-auto max-w-6xl px-4 py-6 pb-24 sm:px-6 md:pb-10">
         <Outlet />
