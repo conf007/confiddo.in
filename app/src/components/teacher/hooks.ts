@@ -30,4 +30,16 @@ export const teacherKeys = {
   comparison: ['teacher', 'comparison'] as const,
   selfAnalytics: ['teacher', 'self-analytics'] as const,
   notificationPrefs: ['teacher', 'notification-prefs'] as const,
+  studentJourney: (studentId: string, classId: string) =>
+    ['teacher', 'student', studentId, 'journey', classId] as const,
+  bulkValidation: (classId: string) => ['teacher', 'class', classId, 'bulk-validation'] as const,
+  reviewHistory: (classId: string) => ['teacher', 'class', classId, 'history'] as const,
+  allHistory: ['teacher', 'history'] as const,
+  classTests: (classId: string) => ['teacher', 'class', classId, 'tests'] as const,
+  syllabusBoards: ['teacher', 'syllabus', 'boards'] as const,
+  syllabusSubjects: (boardId: string, grade: number) =>
+    ['teacher', 'syllabus', 'subjects', boardId, grade] as const,
+  syllabusChapters: (subjectId: string) => ['teacher', 'syllabus', 'chapters', subjectId] as const,
+  blueprints: (boardCode: string) => ['teacher', 'syllabus', 'blueprints', boardCode] as const,
+  profile: ['teacher', 'profile'] as const,
 }

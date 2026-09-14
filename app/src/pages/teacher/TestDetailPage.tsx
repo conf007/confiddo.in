@@ -24,9 +24,32 @@ import {
   getTestAsPaper,
   getTestAttemptStatus,
   publishDraftTest,
+  remindOneStudent,
   remindStudents,
+  type RemindResult,
 } from '../../lib/api/teacher'
 import { friendlyError } from '../../lib/api/errors'
+
+function remindNotice(r: RemindResult, name?: string): { text: string; tone: 'success' | 'warn' } {
+  if (r.sent > 0 && r.skipped === 0) {
+    return {
+      text: name
+        ? `Reminder sent to ${name}.`
+        : `Reminder sent to ${r.sent} student${r.sent === 1 ? '' : 's'}.`,
+      tone: 'success',
+    }
+  }
+  if (r.sent === 0 && r.skipped > 0) {
+    return {
+      text: name ? `Already reminded ${name} today.` : `Already reminded today (${r.skipped} skipped).`,
+      tone: 'warn',
+    }
+  }
+  if (r.sent === 0 && r.skipped === 0) {
+    return { text: 'No one to remind.', tone: 'warn' }
+  }
+  return { text: `Sent ${r.sent}, skipped ${r.skipped} (already reminded today).`, tone: 'warn' }
+}
 
 const LIFECYCLE = ['draft', 'live', 'review', 'completed'] as const
 
@@ -62,6 +85,9 @@ export function TestDetailPage() {
   const { testId = '' } = useParams()
   const queryClient = useQueryClient()
   const [showAnswers, setShowAnswers] = useState(false)
+  const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set())
+  const [remindingId, setRemindingId] = useState<string | null>(null)
+  const [notice, setNotice] = useState<{ text: string; tone: 'success' | 'warn' } | null>(null)
 
   const paper = useQuery({
     queryKey: teacherKeys.testPaper(testId),
@@ -83,7 +109,24 @@ export function TestDetailPage() {
   })
   const remind = useMutation({
     mutationFn: (studentIds?: string[]) => remindStudents(testId, studentIds),
+    onSuccess: (r) => {
+      setNotice(remindNotice(r))
+      setSelected(new Set())
+    },
   })
+  const remindOne = useMutation({
+    mutationFn: ({ studentId }: { studentId: string; name: string }) =>
+      remindOneStudent(testId, studentId),
+    onSuccess: (r, vars) => setNotice(remindNotice(r, vars.name.split(' ')[0])),
+    onSettled: () => setRemindingId(null),
+  })
+  const toggleSelected = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
 
   if (paper.isLoading) return <LoadingState />
   if (!paper.data) {
@@ -190,33 +233,64 @@ export function TestDetailPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => remind.mutate(undefined)}
+                      onClick={() =>
+                        remind.mutate(selected.size > 0 ? Array.from(selected) : undefined)
+                      }
                       loading={remind.isPending}
+                      disabled={remindOne.isPending}
                     >
-                      Remind all
+                      {selected.size > 0 ? `Remind selected (${selected.size})` : 'Remind all'}
                     </Button>
                   )}
                 </div>
-                {remind.data && (
-                  <p className="mb-2 text-xs text-success">
-                    Reminder sent to {remind.data.sent} student
-                    {remind.data.sent === 1 ? '' : 's'}
-                    {remind.data.skipped > 0 &&
-                      ` (${remind.data.skipped} already reminded today)`}
+                {notice && (
+                  <p
+                    role="status"
+                    className={`mb-2 text-xs ${notice.tone === 'success' ? 'text-success' : 'text-band-yellow'}`}
+                  >
+                    {notice.text}
                   </p>
                 )}
-                {remind.error && (
+                {(remind.error || remindOne.error) && (
                   <p className="mb-2 text-xs text-band-red">
-                    {friendlyError(remind.error)}
+                    {friendlyError(remind.error ?? remindOne.error)}
                   </p>
                 )}
                 <ul className="space-y-1.5">
                   {a.not_started.map((s) => (
                     <li
                       key={s.id}
-                      className="rounded-lg bg-surface px-3 py-2 text-sm text-ink-soft"
+                      className="flex items-center gap-2 rounded-lg bg-surface px-3 py-1.5 text-sm text-ink-soft"
                     >
-                      {s.full_name}
+                      {p.status === 'live' ? (
+                        <>
+                          <label className="flex min-h-8 min-w-0 flex-1 cursor-pointer items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={selected.has(s.id)}
+                              onChange={() => toggleSelected(s.id)}
+                              aria-label={`Select ${s.full_name}`}
+                              className="h-4 w-4 accent-[var(--color-primary)]"
+                            />
+                            <span className="truncate">{s.full_name}</span>
+                          </label>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            aria-label={`Remind ${s.full_name}`}
+                            loading={remindingId === s.id && remindOne.isPending}
+                            disabled={remindOne.isPending || remind.isPending}
+                            onClick={() => {
+                              setRemindingId(s.id)
+                              remindOne.mutate({ studentId: s.id, name: s.full_name })
+                            }}
+                          >
+                            Remind
+                          </Button>
+                        </>
+                      ) : (
+                        <span className="min-h-8 truncate leading-8">{s.full_name}</span>
+                      )}
                     </li>
                   ))}
                   {a.not_started.length === 0 && (
