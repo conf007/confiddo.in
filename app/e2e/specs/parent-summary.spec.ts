@@ -28,7 +28,7 @@ test('parent: children, weekly summary, subjects, achievements without scores, p
   await page.getByRole('link', { name: /open|view|see/i }).first().click().catch(() => page.goto(`/app/parent/children/${w.student.id}`))
   await expect(page).toHaveURL(new RegExp(`/parent/children/${w.student.id}`))
   await page.getByRole('tab', { name: 'Subjects' }).click()
-  await expect(page.getByTestId('subjects-tab').or(page.getByText(/No practice yet|Couldn't load subjects/))).toBeVisible()
+  await expect(page.getByTestId('subjects-tab')).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath('parent-child.png'), fullPage: true, animations: 'disabled' })
   const body = await page.locator('body').innerText()
   expect(body).not.toMatch(/\d+\s?%/)
