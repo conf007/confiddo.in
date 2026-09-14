@@ -14,6 +14,7 @@ import { ReadinessChip } from '../../components/teacher/ReadinessChip'
 import { SummaryView } from '../../components/parent/SummaryView'
 import { GrowthCardView } from '../../components/parent/GrowthCardView'
 import { ShareActions } from '../../components/parent/ShareActions'
+import { SubjectsTab } from './SubjectPages'
 import { parentKeys } from '../../components/parent/hooks'
 import {
   getChildSummary,
@@ -24,7 +25,7 @@ import {
   type PagedSubjectProgress,
 } from '../../lib/api/parent'
 
-type Tab = 'week' | 'four' | 'journey'
+type Tab = 'week' | 'subjects' | 'four' | 'journey'
 
 const TOOLS: { to: string; label: string; icon: IconName; blurb: string }[] = [
   { to: 'activity', label: 'Activity Feed', icon: 'clipboard', blurb: 'Day-by-day practice story' },
@@ -36,6 +37,7 @@ const TOOLS: { to: string; label: string; icon: IconName; blurb: string }[] = [
   { to: 'achievements', label: 'Achievements', icon: 'medal', blurb: 'Wins worth celebrating' },
   { to: 'readiness', label: 'Readiness', icon: 'sparkles', blurb: 'Where confidence stands' },
   { to: 'summaries', label: 'Past Summaries', icon: 'chart', blurb: 'Earlier weekly stories' },
+  { to: 'card', label: 'Performance Card', icon: 'medal', blurb: 'A card worth sharing' },
 ]
 
 export function ChildOverviewPage() {
@@ -56,6 +58,7 @@ export function ChildOverviewPage() {
         {(
           [
             ['week', 'This Week'],
+            ['subjects', 'Subjects'],
             ['four', '4-Week Progress'],
             ['journey', 'Full Journey'],
           ] as [Tab, string][]
@@ -78,6 +81,7 @@ export function ChildOverviewPage() {
       </div>
 
       {tab === 'week' && <ThisWeekTab childId={childId} />}
+      {tab === 'subjects' && <SubjectsTab childId={childId} />}
       {tab === 'four' && <FourWeekTab childId={childId} />}
       {tab === 'journey' && <JourneyTab childId={childId} />}
 
@@ -289,7 +293,7 @@ function JourneyTab({ childId }: { childId: string }) {
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <StatCard label="Weeks tracked" value={String(d.summary_stats.weeks_tracked)} />
-        <StatCard label="Levels gained" value={String(d.summary_stats.levels_gained ?? 0)} />
+        <StatCard label="Trend" value={(d.summary_stats.levels_gained ?? 0) > 0 ? 'Moving up' : 'Holding steady'} />
         <StatCard
           label="Current standing"
           value={d.summary_stats.current_avg_display ?? 'Just starting'}
