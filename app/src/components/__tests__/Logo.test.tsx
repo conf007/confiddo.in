@@ -4,9 +4,9 @@ import { Logo } from '../Logo'
 import { subjectMeta } from '../student/subjects'
 
 describe('Logo', () => {
-  it('renders the petal mark with the wordmark', () => {
+  it('renders the logo file with the wordmark', () => {
     const { container } = render(<Logo />)
-    expect(container.querySelectorAll('ellipse').length).toBe(25)
+    expect(container.querySelector('img')?.getAttribute('src')).toMatch(/logo\.svg$/)
     expect(screen.getByText('CONFIDDO')).toBeInTheDocument()
   })
 })

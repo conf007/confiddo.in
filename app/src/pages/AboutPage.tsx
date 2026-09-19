@@ -21,7 +21,7 @@ export function AboutPage() {
       </header>
       <main className="mx-auto max-w-3xl space-y-8 px-4 py-10">
         <div className="text-center">
-          <LogoMark className="mx-auto h-24 w-32" />
+          <LogoMark className="mx-auto h-28 w-28" />
           <h1 className="mt-4 text-3xl font-extrabold tracking-[0.2em] text-ink">CONFIDDO</h1>
           <p className="mt-2 text-sm font-semibold tracking-[0.15em] text-ink-muted uppercase">Confidence builds readiness</p>
         </div>
