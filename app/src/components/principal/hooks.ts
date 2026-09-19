@@ -3,8 +3,8 @@ export const principalKeys = {
   dashboard: ['principal', 'dashboard'] as const,
   heatmap: ['principal', 'heatmap'] as const,
   readinessOverview: ['principal', 'readiness-overview'] as const,
-  classReadiness: (classId: string) =>
-    ['principal', 'class', classId, 'readiness'] as const,
+  classReadiness: (classId: string, subject?: string) =>
+    ['principal', 'class', classId, 'readiness', subject ?? 'default'] as const,
   classMetrics: (classId: string) => ['principal', 'class', classId, 'metrics'] as const,
   classes: ['principal', 'classes'] as const,
   teachers: ['principal', 'teachers'] as const,

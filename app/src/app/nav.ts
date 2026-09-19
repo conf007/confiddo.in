@@ -41,7 +41,9 @@ export const TEACHER_NAV: NavItem[] = [
   { to: '/teacher/tests', label: 'Tests', icon: 'clipboard' },
   { to: '/teacher/paper/new', label: 'Paper Builder', icon: 'book' },
   { to: '/teacher/analytics', label: 'Analytics', icon: 'chart-line' },
+  { to: '/teacher/history', label: 'History', icon: 'check' },
   { to: '/teacher/settings', label: 'Settings', icon: 'settings' },
+  { to: '/teacher/profile', label: 'Profile', icon: 'user' },
 ]
 
 export const PARENT_NAV: NavItem[] = [

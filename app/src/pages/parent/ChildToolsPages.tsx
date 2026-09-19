@@ -3,7 +3,7 @@
  * and home goals. Warm, effort-not-marks rendering throughout (§6.3).
  */
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
@@ -18,6 +18,7 @@ import { formatDay } from '../../components/parent/format'
 import {
   createHomeGoal,
   getActivityFeed,
+  getSubjectSummary,
   getConversationStarters,
   getEngagement,
   getHomeGoals,
@@ -50,11 +51,13 @@ function Observations({ items }: { items: BehavioralObservation[] }) {
 
 // ── Activity feed ─────────────────────────────────────────────────────
 
-const SUBJECTS = ['All', 'Mathematics', 'Science', 'English', 'Hindi']
 
 export function ActivityFeedPage() {
   const { childId = '' } = useParams()
-  const [subject, setSubject] = useState<string>()
+  const [params] = useSearchParams()
+  const [subject, setSubject] = useState<string | undefined>(params.get('subject') ?? undefined)
+  const subjects = useQuery({ queryKey: parentKeys.subjectSummary(childId), queryFn: () => getSubjectSummary(childId) })
+  const SUBJECTS = ['All', ...(subjects.data?.subjects.map((s) => s.name) ?? [])]
   const q = useQuery({
     queryKey: parentKeys.activityFeed(childId, subject),
     queryFn: () => getActivityFeed(childId, subject),

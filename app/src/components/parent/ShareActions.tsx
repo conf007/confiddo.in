@@ -38,8 +38,23 @@ export function ShareActions({
     }
   }
 
+  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+  const share = async () => {
+    onShare?.()
+    try {
+      await navigator.share({ text })
+    } catch {
+      /* dismissed or unsupported */
+    }
+  }
+
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+      {canShare && (
+        <Button size="sm" onClick={share}>
+          Share
+        </Button>
+      )}
       <Button variant="secondary" size="sm" onClick={copy}>
         <Icon name={copied ? 'check' : 'clipboard'} className="h-4 w-4" />
         {copied ? 'Copied!' : 'Copy message'}

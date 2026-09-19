@@ -5,6 +5,10 @@ name: Deploy site + web app to GitHub Pages
 #   /            landing page (index.html, privacy.html, favicon.svg, CNAME)
 #   /app/        the built SPA (app/dist), plus index.html copies for the top-level routes so
 #                deep links return 200, and a /404.html SPA fallback for everything else.
+#   /admin/      the Flutter Web admin panel, pulled from the latest successful `admin-web`
+#                artifact of conf007/confiddo (workflow admin-web.yml). Best-effort: needs the
+#                ADMIN_BUILD_TOKEN secret (fine-grained PAT, actions:read on conf007/confiddo);
+#                when it is missing the step warns and the app deploy still goes out.
 # Owner prerequisite (one-time): Pages -> Build and deployment -> Source = "GitHub Actions"
 #   gh api -X PUT repos/conf007/confiddo.in/pages -f build_type=workflow
 on:
@@ -58,6 +62,27 @@ jobs:
           done
           touch _site/.nojekyll
           find _site -maxdepth 3 -type f | sort | head -40
+      - name: Add the admin panel (/admin/) from the latest successful conf007/confiddo admin-web run
+        working-directory: .
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_BUILD_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::warning::ADMIN_BUILD_TOKEN secret is not set — /admin/ skipped, app deploy continues"
+            exit 1
+          fi
+          run_id=$(gh run list --repo conf007/confiddo --workflow admin-web.yml --branch main \
+                     --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+            echo "::warning::no successful admin-web run on conf007/confiddo main — /admin/ skipped"
+            exit 1
+          fi
+          gh run download "$run_id" --repo conf007/confiddo --name admin-web --dir _site/admin
+          test -f _site/admin/index.html
+          grep -q '<base href="/admin/">' _site/admin/index.html
+          echo "admin panel from conf007/confiddo run $run_id -> /admin/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

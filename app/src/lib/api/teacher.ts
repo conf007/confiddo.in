@@ -884,3 +884,331 @@ export function rejectAssignment(
     query: { reason },
   })
 }
+
+export function remindOneStudent(testId: string, studentId: string): Promise<RemindResult> {
+  return apiData(`/teacher/tests/${testId}/remind/${studentId}`, { method: 'POST' })
+}
+
+export interface LevelChangeResult {
+  student_id: string
+  new_level: string
+  new_level_display: string
+  validation_id: string
+  modified_at: string
+}
+
+export function modifyStudentLevel(
+  classId: string,
+  studentId: string,
+  newLevel: ReadinessCode,
+): Promise<LevelChangeResult> {
+  return apiData(`/teacher/classes/${classId}/students/${studentId}/level`, {
+    method: 'PATCH',
+    body: { new_level: newLevel },
+  })
+}
+
+export interface JourneyWeekCell {
+  week_index: number
+  week_start: string
+  child_level: string | null
+  class_avg_level: string | null
+}
+
+export interface StudentJourney {
+  student: { id: string; full_name: string; class_grade: string; section: string }
+  class_name: string
+  subject: string
+  journey: {
+    child_first_name: string
+    total_weeks: number
+    week_labels: string[]
+    subject: {
+      name: string
+      weeks: JourneyWeekCell[]
+      levels_gained: number
+      current_level: string | null
+      current_display: string | null
+      topic_breakdown?: { confident: string[]; improving: string[]; needs_help: string[] }
+    } | null
+    summary_stats: {
+      weeks_tracked: number
+      levels_gained: number
+      current_avg_level: string | null
+      current_avg_display: string | null
+    }
+    insights: { type: string; subject: string; message: string }[]
+  }
+  subject_summary: {
+    name: string
+    session_count?: number
+    questions_count?: number
+    insight?: string
+    topic_breakdown?: { confident: string[]; improving: string[]; needs_help: string[] }
+  } | null
+}
+
+export function getStudentJourney(studentId: string, classId: string): Promise<StudentJourney> {
+  return apiData(`/teacher/students/${studentId}/journey`, { query: { class_id: classId } })
+}
+
+export interface BulkSuggestionItem {
+  suggestion_id: string
+  student_first_name: string
+  current_level: string
+  current_level_display: string
+  suggested_level: string
+  suggested_level_display: string
+  has_change: boolean
+}
+
+export interface BulkValidationOverview {
+  class_id: string
+  class_name: string
+  total: number
+  no_change_count: number
+  changed_count: number
+  no_change_suggestions: BulkSuggestionItem[]
+  changed_suggestions: BulkSuggestionItem[]
+}
+
+export function getBulkValidationOverview(classId: string): Promise<BulkValidationOverview> {
+  return apiData(`/teacher/classes/${classId}/bulk-validation`)
+}
+
+export interface ReviewDecision {
+  student_first_name: string
+  current_level: string
+  suggested_level: string | null
+  action: ValidationAction | string
+  final_level: string
+}
+
+export interface HistoricalReview {
+  session_id: string
+  test_id: string | null
+  test_title: string
+  week_start_date: string
+  status: string
+  total_students: number
+  students_reviewed: number
+  total_time_ms: number | null
+  total_time_display: string | null
+  moved_up: number
+  moved_down: number
+  stayed: number
+  decisions: ReviewDecision[]
+  class_id?: string
+  class_name?: string
+}
+
+export function getClassReviewHistory(
+  classId: string,
+): Promise<{ class_id: string; class_name: string; reviews: HistoricalReview[] }> {
+  return apiData(`/teacher/classes/${classId}/reviews/history`)
+}
+
+export function getAllClassesHistory(): Promise<{
+  classes: { class_id: string; class_name: string }[]
+  reviews: HistoricalReview[]
+  total_count: number
+}> {
+  return apiData('/teacher/history')
+}
+
+export interface ClassTestQuestion {
+  id: string
+  text: string
+  topic: string | null
+  options: { id: string; text: string; is_correct: boolean }[]
+}
+
+export interface ClassTest {
+  id: string
+  title: string
+  subject: string
+  total_questions: number
+  difficulty: string | null
+  created_by_name: string | null
+  questions: ClassTestQuestion[]
+}
+
+export function getClassTests(classId: string): Promise<{ class_id: string; tests: ClassTest[] }> {
+  return apiData(`/teacher/classes/${classId}/tests`)
+}
+
+export interface SyllabusBoard {
+  id: string
+  code: string
+  name: string
+}
+
+export interface SyllabusSubject {
+  id: string
+  board_id: string
+  grade: number
+  code: string
+  name: string
+  total_marks: number
+  duration_minutes: number
+}
+
+export interface SyllabusChapter {
+  id: string
+  subject_id: string
+  chapter_number: number
+  name: string
+  unit_name: string | null
+}
+
+export interface PaperBlueprint {
+  id: string
+  board_code: string
+  paper_type: string
+  label: string
+  total_marks: number
+  duration_minutes: number
+  default_question_mix: string | null
+  instructions: string | null
+}
+
+export function getSyllabusBoards(): Promise<{ boards: SyllabusBoard[] }> {
+  return apiData('/teacher/syllabus/boards')
+}
+
+export function getSyllabusSubjects(
+  boardId: string,
+  grade?: number,
+): Promise<{ subjects: SyllabusSubject[] }> {
+  return apiData('/teacher/syllabus/subjects', { query: { board_id: boardId, grade } })
+}
+
+export function getSyllabusChapters(subjectId: string): Promise<{ chapters: SyllabusChapter[] }> {
+  return apiData('/teacher/syllabus/chapters', { query: { subject_id: subjectId } })
+}
+
+export function getBlueprints(
+  boardCode: string,
+  paperType?: string,
+): Promise<{ blueprints: PaperBlueprint[] }> {
+  return apiData('/teacher/syllabus/blueprints', {
+    query: { board_code: boardCode, paper_type: paperType },
+  })
+}
+
+export type ExamQuestionType =
+  | 'mcq'
+  | 'short_answer'
+  | 'short_answer_i'
+  | 'short_answer_ii'
+  | 'long_answer'
+  | 'case_based'
+  | 'assertion_reason'
+  | 'fill_blanks'
+
+export interface QuestionMixItem {
+  type: ExamQuestionType
+  marks_each: number
+  count: number
+}
+
+export type ExamPaperType = 'unit_test' | 'half_yearly' | 'annual' | 'practice'
+
+export interface GeneratePromptRequest {
+  board_code: string
+  grade: number
+  subject_code: string
+  subject_name: string
+  chapter_names: string[]
+  paper_type: ExamPaperType
+  total_marks: number
+  duration_minutes: number
+  question_mix: QuestionMixItem[]
+  additional_instructions: string | null
+}
+
+export function generatePaperPrompt(req: GeneratePromptRequest): Promise<{ prompt_text: string }> {
+  return apiData('/teacher/paper/generate-prompt', { method: 'POST', body: req })
+}
+
+export interface ExamPaperQuestion {
+  number: number
+  type: string
+  marks: number
+  text: string
+  options: string[] | null
+  expected_answer: string | null
+}
+
+export interface ExamPaper {
+  title: string
+  subject?: string
+  instructions: string
+  duration_minutes: number
+  total_marks: number
+  sections: { name: string; questions: ExamPaperQuestion[] }[]
+}
+
+export function generatePaper(
+  promptText: string,
+  config: GeneratePromptRequest | null,
+): Promise<ExamPaper> {
+  return apiData('/teacher/paper/generate', {
+    method: 'POST',
+    body: { prompt_text: promptText, config },
+  })
+}
+
+export interface SavePaperRequest {
+  title: string
+  subject: string
+  grade: number
+  board_code: string
+  instructions: string
+  duration_minutes: number
+  total_marks: number
+  sections: { name: string; questions: ExamPaperQuestion[] }[]
+  class_id: string | null
+}
+
+export interface SavePaperResult {
+  test_id: string
+  title: string
+  total_questions: number
+  is_active: boolean
+  message: string
+}
+
+export function savePaper(req: SavePaperRequest): Promise<SavePaperResult> {
+  return apiData('/teacher/paper/save', { method: 'POST', body: req })
+}
+
+export interface TeacherProfileData {
+  id: string
+  full_name: string
+  email: string | null
+  email_verified: boolean
+  subject: string | null
+  school_name: string | null
+}
+
+export function getTeacherProfile(): Promise<TeacherProfileData> {
+  return apiData('/teacher/profile')
+}
+
+export function sendTeacherEmailChangeOtp(newEmail: string): Promise<{ message: string }> {
+  return apiData('/teacher/profile/update-email/send-otp', {
+    method: 'POST',
+    body: { new_email: newEmail },
+  })
+}
+
+export function verifyTeacherEmailChange(
+  newEmail: string,
+  otpCode: string,
+): Promise<{ message: string; email: string; email_verified: boolean }> {
+  return apiData('/teacher/profile/update-email/verify', {
+    method: 'POST',
+    body: { new_email: newEmail, otp_code: otpCode },
+  })
+}

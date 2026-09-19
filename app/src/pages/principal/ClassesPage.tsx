@@ -3,7 +3,7 @@
  * (readiness distribution + confidence metrics + notify teacher).
  */
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
@@ -36,11 +36,12 @@ export function PrincipalClassesPage() {
   })
   const [assigning, setAssigning] = useState<PrincipalClass | null>(null)
   const [teacherId, setTeacherId] = useState('')
+  const [isPrimary, setIsPrimary] = useState(true)
   const [unassign, setUnassign] = useState<{ cls: PrincipalClass; teacherId: string; name: string } | null>(null)
 
   const invalidate = () => qc.invalidateQueries({ queryKey: principalKeys.classes })
   const assignMut = useMutation({
-    mutationFn: () => assignTeacherToClass(assigning!.id, teacherId),
+    mutationFn: () => assignTeacherToClass(assigning!.id, teacherId, isPrimary),
     onSuccess: () => {
       setAssigning(null)
       setTeacherId('')
@@ -77,7 +78,7 @@ export function PrincipalClassesPage() {
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <Link
-                    to={`/principal/classes/${c.id}`}
+                    to={`/principal/classes/${c.id}?subject=${encodeURIComponent(c.subject)}`}
                     className="text-base font-semibold text-ink hover:text-primary"
                   >
                     {c.name}
@@ -147,6 +148,14 @@ export function PrincipalClassesPage() {
               </option>
             ))}
         </select>
+        <div className="mt-3 flex gap-4 text-sm" role="radiogroup" aria-label="Role in class">
+          {([[true, 'Primary teacher'], [false, 'Co-teacher']] as [boolean, string][]).map(([v, label]) => (
+            <label key={label} className="flex items-center gap-2 text-ink">
+              <input type="radio" name="assign-role" checked={isPrimary === v} onChange={() => setIsPrimary(v)} />
+              {label}
+            </label>
+          ))}
+        </div>
         {assignMut.isError && (
           <p className="mt-2 text-sm text-band-red">{friendlyError(assignMut.error)}</p>
         )}
@@ -178,9 +187,11 @@ const NOTIFY_OPTIONS: { value: NotifyMessageType; label: string }[] = [
 
 export function PrincipalClassDetailPage() {
   const { classId = '' } = useParams()
+  const [params] = useSearchParams()
+  const subject = params.get('subject') ?? undefined
   const readinessQ = useQuery({
-    queryKey: principalKeys.classReadiness(classId),
-    queryFn: () => getClassReadinessDetail(classId),
+    queryKey: principalKeys.classReadiness(classId, subject),
+    queryFn: () => getClassReadinessDetail(classId, subject),
   })
   const metricsQ = useQuery({
     queryKey: principalKeys.classMetrics(classId),

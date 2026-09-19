@@ -16,6 +16,8 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { Icon } from '../../components/icons'
 import { Spinner } from '../../components/ui/Spinner'
 import { CharacterAvatar } from '../../components/student/CharacterAvatar'
+import { LevelCard } from '../../components/student/LevelCard'
+import { SubjectSection } from '../../components/student/SubjectSection'
 import { streakTodayStatus } from '../../components/student/gamification'
 import {
   useGamificationQuery,
@@ -119,7 +121,6 @@ export function StudentHomePage() {
 
   const allTests = tests.data?.tests ?? []
   const inProgress = allTests.filter((t) => t.session_status === 'in_progress')
-  const completedCount = allTests.filter((t) => t.session_status === 'completed').length
   const firstName = profile.data?.full_name?.split(' ')[0]
   const character = profile.data ? getCharacter(profile.data.selected_character) : null
   const g = gamification.data
@@ -164,15 +165,13 @@ export function StudentHomePage() {
           </div>
         </div>
         <div className="flex gap-2">
-          {completedCount > 0 && (
-            <Link
-              to="/student/history"
-              className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"
-            >
-              <Icon name="clipboard" className="h-4 w-4" />
-              Past tests
-            </Link>
-          )}
+          <Link
+            to="/student/history"
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"
+          >
+            <Icon name="clipboard" className="h-4 w-4" />
+            Past tests
+          </Link>
           <Link
             to="/student/link-parent"
             className="inline-flex h-12 items-center gap-1.5 rounded-xl px-3 text-sm font-medium text-ink-muted hover:bg-slate-50 hover:text-ink-soft"
@@ -189,6 +188,8 @@ export function StudentHomePage() {
           </Link>
         </div>
       </div>
+
+      {g && <LevelCard g={g} />}
 
       {inProgress.length > 0 && (
         <Card className="flex flex-col items-start justify-between gap-4 border border-primary/15 sm:flex-row sm:items-center">
@@ -218,29 +219,13 @@ export function StudentHomePage() {
           description="When your teacher publishes a practice test, it will appear right here. Check back soon!"
         />
       ) : (
-        [...bySubject.entries()].map(([subject, subjectTests]) => {
-          const done = subjectTests.filter((t) => t.session_status === 'completed').length
-          return (
-            <section key={subject} aria-label={subject}>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-tint text-primary">
-                    <Icon name="book" className="h-4.5 w-4.5" />
-                  </span>
-                  <h2 className="text-base font-semibold text-ink">{subject}</h2>
-                </div>
-                <Badge tone="neutral">
-                  {done}/{subjectTests.length} done
-                </Badge>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {subjectTests.map((test) => (
-                  <TestCard key={test.id} test={test} />
-                ))}
-              </div>
-            </section>
-          )
-        })
+        [...bySubject.entries()].map(([subject, subjectTests]) => (
+          <SubjectSection key={subject} subject={subject} tests={subjectTests}>
+            {subjectTests.map((test) => (
+              <TestCard key={test.id} test={test} />
+            ))}
+          </SubjectSection>
+        ))
       )}
     </div>
   )

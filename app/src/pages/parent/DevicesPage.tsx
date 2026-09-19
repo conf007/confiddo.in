@@ -14,22 +14,32 @@ import { Icon } from '../../components/icons'
 import { ErrorState, LoadingState } from '../../components/teacher/PageState'
 import { ConfirmDialog } from '../../components/principal/ConfirmDialog'
 import { parentKeys } from '../../components/parent/hooks'
+import { useAuth } from '../../lib/auth/AuthContext'
+import { webDeviceName } from '../../lib/auth/device'
 import { formatDateTime } from '../../components/parent/format'
 import { getDevices, removeDevice, type ParentDevice } from '../../lib/api/parent'
 import { friendlyError } from '../../lib/api/errors'
 
 export function DevicesPage() {
   const qc = useQueryClient()
+  const { logout } = useAuth()
+  const mine = webDeviceName()
   const devices = useQuery({ queryKey: parentKeys.devices, queryFn: getDevices })
   const [toRemove, setToRemove] = useState<ParentDevice | null>(null)
 
   const remove = useMutation({
     mutationFn: (deviceId: string) => removeDevice(deviceId),
-    onSuccess: () => {
+    onSuccess: (_, deviceId) => {
+      const removed = devices.data?.devices.find((x) => x.id === deviceId)
       setToRemove(null)
+      if (removed && isThisDevice(removed)) {
+        logout()
+        return
+      }
       void qc.invalidateQueries({ queryKey: parentKeys.devices })
     },
   })
+  const isThisDevice = (x: ParentDevice) => x.device_name === mine && x.id === [...(devices.data?.devices ?? [])].filter((y) => y.device_name === mine).sort((a, b) => (b.login_at ?? '').localeCompare(a.login_at ?? ''))[0]?.id
 
   if (devices.isLoading) return <LoadingState />
   if (!devices.data) {
@@ -107,7 +117,9 @@ export function DevicesPage() {
         title="Sign out this device?"
         description={
           toRemove
-            ? `${toRemove.device_name} will be signed out and will need your password to reconnect.`
+            ? isThisDevice(toRemove)
+              ? 'This is the device you are using now. You will be signed out here.'
+              : `${toRemove.device_name} will be signed out and will need your password to reconnect.`
             : undefined
         }
         confirmLabel="Sign out device"

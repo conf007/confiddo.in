@@ -13,6 +13,7 @@
  */
 import { useEffect } from 'react'
 import { loadTracked, saveTracked } from './tracker'
+import { flushEvents, recordEvent } from './events'
 
 const ABSENCE_THRESHOLD_MS = 30_000
 
@@ -25,8 +26,11 @@ export function useAppSwitchTracking(sessionId: string | undefined, active: bool
       if (!session || session.completion) return
       if (document.hidden) {
         saveTracked({ ...session, hiddenAt: Date.now() })
+        recordEvent(sessionId, 'session_paused')
+        void flushEvents(sessionId, true)
       } else if (session.hiddenAt) {
         const away = Date.now() - session.hiddenAt
+        recordEvent(sessionId, 'session_resumed', null, { pause_duration_ms: away })
         saveTracked({
           ...session,
           hiddenAt: undefined,

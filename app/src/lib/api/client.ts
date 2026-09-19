@@ -38,6 +38,7 @@ interface RequestOptions {
   /** false for login/refresh/public endpoints */
   auth?: boolean
   signal?: AbortSignal
+  keepalive?: boolean
 }
 
 /** WS-D refresh-token rotation capability (backend token_service.ROTATION_CAPABILITY). */
@@ -146,7 +147,7 @@ export async function api<T = unknown>(
   path: string,
   opts: RequestOptions = {},
 ): Promise<T> {
-  const { method = 'GET', body, query, auth = true, signal } = opts
+  const { method = 'GET', body, query, auth = true, signal, keepalive } = opts
   const url = buildUrl(path, query)
   const maxTries = method === 'GET' ? GET_RETRIES : 1
   let lastError: unknown
@@ -169,6 +170,7 @@ export async function api<T = unknown>(
         headers,
         body: body !== undefined ? JSON.stringify(body) : undefined,
         signal: controller.signal,
+        keepalive,
       })
 
       if (res.status === 401 && auth && !retriedAuth) {

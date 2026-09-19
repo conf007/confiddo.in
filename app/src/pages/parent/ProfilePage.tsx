@@ -11,7 +11,7 @@ import { Card } from '../../components/ui/Card'
 import { Icon } from '../../components/icons'
 import { ErrorState, LoadingState } from '../../components/teacher/PageState'
 import { EmailChangeCard } from '../../components/parent/EmailChangeCard'
-import { parentKeys } from '../../components/parent/hooks'
+import { parentKeys, useChildrenQuery } from '../../components/parent/hooks'
 import {
   getParentProfile,
   sendParentEmailChangeOtp,
@@ -24,6 +24,7 @@ export function ParentProfilePage() {
   const { logout } = useAuth()
   const navigate = useNavigate()
   const profile = useQuery({ queryKey: parentKeys.profile, queryFn: getParentProfile })
+  const children = useChildrenQuery()
 
   if (profile.isLoading) return <LoadingState />
   if (!profile.data) {
@@ -53,6 +54,21 @@ export function ParentProfilePage() {
         </div>
       </Card>
 
+      <Card padded={false} className="divide-y divide-slate-100" data-testid="linked-children">
+        <p className="px-6 pt-4 pb-2 text-base font-semibold text-ink">Linked children</p>
+        {(children.data?.children ?? []).map((c) => (
+          <Link key={c.id} to={`/parent/children/${c.id}`} className="flex items-center justify-between gap-3 px-6 py-3 text-sm hover:bg-slate-50">
+            <span className="font-medium text-ink">{c.first_name}</span>
+            <span className="text-xs text-ink-muted">Class {c.grade}{c.school_name ? ` · ${c.school_name}` : ''}</span>
+          </Link>
+        ))}
+        {children.data && children.data.children.length === 0 && <p className="px-6 py-3 text-sm text-ink-muted">No child linked yet.</p>}
+        <Link to="/parent/link-child" className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-primary hover:bg-slate-50">
+          <Icon name="link" className="h-4 w-4" />
+          Link a child
+        </Link>
+      </Card>
+
       <EmailChangeCard
         email={p.email}
         emailVerified={p.email_verified}
@@ -72,6 +88,13 @@ export function ParentProfilePage() {
             <Icon name="lock" className="h-4 w-4" />
             Change password
           </Button>
+        </Link>
+      </Card>
+
+      <Card padded={false}>
+        <Link to="/about" className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-ink hover:bg-slate-50">
+          <Icon name="alert" className="h-5 w-5 text-primary" />
+          About Confiddo
         </Link>
       </Card>
 

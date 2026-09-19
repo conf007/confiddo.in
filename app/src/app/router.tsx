@@ -51,6 +51,7 @@ const ClassProgressPage = lazy(() => import('../pages/student/ClassProgressPage'
 const LinkParentPage = lazy(() => import('../pages/student/LinkParentPage').then((m) => ({ default: m.LinkParentPage })))
 const StudentProfilePage = lazy(() => import('../pages/student/ProfilePage').then((m) => ({ default: m.StudentProfilePage })))
 const XpRulesPage = lazy(() => import('../pages/student/XpRulesPage').then((m) => ({ default: m.XpRulesPage })))
+const AboutPage = lazy(() => import('../pages/AboutPage').then((m) => ({ default: m.AboutPage })))
 const HistoryPage = lazy(() => import('../pages/student/HistoryPage').then((m) => ({ default: m.HistoryPage })))
 const ClassListPage = lazy(() => import('../pages/teacher/ClassListPage').then((m) => ({ default: m.ClassListPage })))
 const ClassOverviewPage = lazy(() => import('../pages/teacher/ClassOverviewPage').then((m) => ({ default: m.ClassOverviewPage })))
@@ -61,6 +62,12 @@ const ReviewQueuePage = lazy(() => import('../pages/teacher/ReviewQueuePage').th
 const StudentDetailPage = lazy(() => import('../pages/teacher/StudentDetailPage').then((m) => ({ default: m.StudentDetailPage })))
 const AnalyticsPage = lazy(() => import('../pages/teacher/AnalyticsPage').then((m) => ({ default: m.AnalyticsPage })))
 const NotificationSettingsPage = lazy(() => import('../pages/teacher/NotificationSettingsPage').then((m) => ({ default: m.NotificationSettingsPage })))
+const ClassHistoryPage = lazy(() => import('../pages/teacher/HistoryPages').then((m) => ({ default: m.ClassHistoryPage })))
+const AllHistoryPage = lazy(() => import('../pages/teacher/HistoryPages').then((m) => ({ default: m.AllHistoryPage })))
+const ExamPaperPage = lazy(() => import('../pages/teacher/ExamPaperPage').then((m) => ({ default: m.ExamPaperPage })))
+const TeacherProfilePage = lazy(() => import('../pages/teacher/ProfilePage').then((m) => ({ default: m.TeacherProfilePage })))
+const SubjectDetailPage = lazy(() => import('../pages/parent/SubjectPages').then((m) => ({ default: m.SubjectDetailPage })))
+const PerformanceCardPage = lazy(() => import('../pages/parent/SubjectPages').then((m) => ({ default: m.PerformanceCardPage })))
 const ParentRoot = lazy(() => import('../pages/parent/ParentRoot').then((m) => ({ default: m.ParentRoot })))
 const ChildrenPage = lazy(() => import('../pages/parent/ChildrenPage').then((m) => ({ default: m.ChildrenPage })))
 const ChildOverviewPage = lazy(() => import('../pages/parent/ChildOverviewPage').then((m) => ({ default: m.ChildOverviewPage })))
@@ -83,6 +90,7 @@ const HeatmapPage = lazy(() => import('../pages/principal/HeatmapPage').then((m)
 const PrincipalClassDetailPage = lazy(() => import('../pages/principal/ClassesPage').then((m) => ({ default: m.PrincipalClassDetailPage })))
 const PrincipalClassesPage = lazy(() => import('../pages/principal/ClassesPage').then((m) => ({ default: m.PrincipalClassesPage })))
 const DirectoryPage = lazy(() => import('../pages/principal/DirectoryPage').then((m) => ({ default: m.DirectoryPage })))
+const TeacherInsightsPage = lazy(() => import('../pages/principal/TeacherInsightsPage').then((m) => ({ default: m.TeacherInsightsPage })))
 const TeacherDetailPage = lazy(() => import('../pages/principal/DirectoryPage').then((m) => ({ default: m.TeacherDetailPage })))
 const PrincipalStudentDetailPage = lazy(() => import('../pages/principal/StudentsPage').then((m) => ({ default: m.PrincipalStudentDetailPage })))
 const StudentsPage = lazy(() => import('../pages/principal/StudentsPage').then((m) => ({ default: m.StudentsPage })))
@@ -92,6 +100,7 @@ const PrincipalProfilePage = lazy(() => import('../pages/principal/ProfilePage')
 export const router = createBrowserRouter(
   [
     { path: '/', element: <RootRedirect /> },
+    { path: '/about', element: lz(AboutPage) },
 
     // Public auth shell (navy split panel)
     {
@@ -145,12 +154,16 @@ export const router = createBrowserRouter(
         { index: true, element: lz(ClassListPage) },
         { path: 'classes/:classId', element: lz(ClassOverviewPage) },
         { path: 'classes/:classId/review', element: lz(ReviewQueuePage) },
+        { path: 'classes/:classId/history', element: lz(ClassHistoryPage) },
+        { path: 'history', element: lz(AllHistoryPage) },
         { path: 'paper/new', element: lz(PaperFlowPage) },
+        { path: 'paper/exam', element: lz(ExamPaperPage) },
         { path: 'tests', element: lz(TestStatusPage) },
         { path: 'tests/:testId', element: lz(TestDetailPage) },
         { path: 'students/:studentId', element: lz(StudentDetailPage) },
         { path: 'analytics', element: lz(AnalyticsPage) },
         { path: 'settings', element: lz(NotificationSettingsPage) },
+        { path: 'profile', element: lz(TeacherProfilePage) },
         { path: 'notifications', element: lz(NotificationsPage) },
         { path: '*', element: <SectionPlaceholderPage /> },
       ],
@@ -176,6 +189,8 @@ export const router = createBrowserRouter(
             { path: 'children/:childId/monthly', element: lz(MonthlyReportPage) },
             { path: 'children/:childId/achievements', element: lz(AchievementsPage) },
             { path: 'children/:childId/readiness', element: lz(ReadinessPage) },
+            { path: 'children/:childId/subjects/:subject', element: lz(SubjectDetailPage) },
+            { path: 'children/:childId/card', element: lz(PerformanceCardPage) },
             { path: 'children/:childId/summaries', element: lz(PastSummariesPage) },
             {
               path: 'children/:childId/summaries/:summaryId',
@@ -205,6 +220,7 @@ export const router = createBrowserRouter(
         { path: 'classes/:classId', element: lz(PrincipalClassDetailPage) },
         { path: 'directory', element: lz(DirectoryPage) },
         { path: 'directory/:teacherId', element: lz(TeacherDetailPage) },
+        { path: 'directory/:teacherId/insights', element: lz(TeacherInsightsPage) },
         { path: 'students', element: lz(StudentsPage) },
         { path: 'students/:studentId', element: lz(PrincipalStudentDetailPage) },
         { path: 'profile', element: lz(PrincipalProfilePage) },

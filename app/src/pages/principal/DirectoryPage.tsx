@@ -146,7 +146,7 @@ export function DirectoryPage() {
         <Card className="h-fit p-6">
           <h2 className="text-base font-semibold text-ink">Invite codes</h2>
           <p className="mt-1 text-xs leading-relaxed text-ink-muted">
-            6-character codes, 7-day expiry — teachers register with one at /register/teacher.
+            6-character codes, valid for 15 minutes — teachers register with one at /register/teacher.
           </p>
           <form
             className="mt-4 flex gap-2"
@@ -190,7 +190,7 @@ export function DirectoryPage() {
                   <span className="font-mono font-semibold tracking-widest text-ink">{c.code}</span>
                   <span className="text-xs text-ink-muted">
                     {c.teacher_name ?? 'Anyone'} ·{' '}
-                    {Math.max(0, Math.floor(c.remaining_seconds / 86400))}d left
+                    {Math.max(0, Math.ceil(c.remaining_seconds / 60))} min left
                   </span>
                 </li>
               ))}
@@ -295,6 +295,9 @@ export function TeacherDetailPage() {
 
       <Card className="p-6">
         <h2 className="text-base font-semibold text-ink">Classes</h2>
+        <Link to={`/principal/directory/${teacherId}/insights`} className="mt-1 mb-3 inline-block text-sm font-medium text-primary hover:text-primary-light">
+          Review insights →
+        </Link>
         {q.data.assigned_classes.length === 0 ? (
           <p className="mt-2 text-sm text-ink-muted">
             No classes assigned yet — assign from the Classes page.

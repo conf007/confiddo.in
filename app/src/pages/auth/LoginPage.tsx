@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth/AuthContext'
+import { OnboardingSheet } from '../../components/OnboardingSheet'
 import type { Role } from '../../lib/auth/tokens'
 import { friendlyError } from '../../lib/api/errors'
 import { roleHome } from '../../app/nav'
@@ -137,6 +138,7 @@ export function LoginPage() {
   if (!role) {
     return (
       <div className="space-y-6">
+        <OnboardingSheet />
         <div className="text-center">
           <h2 className="text-2xl font-bold text-ink">
             How are you using Confiddo?

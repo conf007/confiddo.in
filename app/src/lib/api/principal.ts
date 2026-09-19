@@ -122,8 +122,8 @@ export interface ClassReadinessDetail {
   actions: { action: string; label: string; enabled: boolean }[]
 }
 
-export function getClassReadinessDetail(classId: string): Promise<ClassReadinessDetail> {
-  return apiData(`/principal/readiness/class/${classId}`)
+export function getClassReadinessDetail(classId: string, subject?: string): Promise<ClassReadinessDetail> {
+  return apiData(`/principal/readiness/class/${classId}`, { query: { subject } })
 }
 
 // ── Teacher directory (principal.py:490-546) ─────────────────────────

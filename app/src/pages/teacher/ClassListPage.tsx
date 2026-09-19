@@ -8,6 +8,7 @@
  *   GET /teacher/assignments/pending  (teacher.py:959-990)
  *   POST /teacher/assignments/{id}/accept|reject (teacher.py:993-1156)
  */
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Badge } from '../../components/ui/Badge'
@@ -88,8 +89,14 @@ export function ClassListPage() {
     mutationFn: acceptAssignment,
     onSettled: refreshAfterAssignment,
   })
+  const [decliningId, setDecliningId] = useState<string | null>(null)
+  const [reason, setReason] = useState('')
   const reject = useMutation({
-    mutationFn: (id: string) => rejectAssignment(id),
+    mutationFn: ({ id, reason }: { id: string; reason: string }) => rejectAssignment(id, reason),
+    onSuccess: () => {
+      setDecliningId(null)
+      setReason('')
+    },
     onSettled: refreshAfterAssignment,
   })
 
@@ -170,12 +177,44 @@ export function ClassListPage() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => reject.mutate(a.id)}
-                    loading={reject.isPending && reject.variables === a.id}
+                    onClick={() => {
+                      setDecliningId((cur) => (cur === a.id ? null : a.id))
+                      setReason('')
+                    }}
+                    disabled={reject.isPending}
                   >
-                    Decline
+                    {decliningId === a.id ? 'Cancel' : 'Decline'}
                   </Button>
                 </div>
+                {decliningId === a.id && (
+                  <form
+                    className="flex w-full flex-wrap items-end gap-2 rounded-xl bg-surface p-3"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      if (reason.trim()) reject.mutate({ id: a.id, reason: reason.trim() })
+                    }}
+                  >
+                    <label className="min-w-0 flex-1 text-xs font-medium text-ink-soft">
+                      Reason for declining
+                      <input
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        maxLength={255}
+                        placeholder="e.g. timetable clash"
+                        className="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-card px-3 text-sm font-normal text-ink outline-none placeholder:text-ink-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      />
+                    </label>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      type="submit"
+                      disabled={!reason.trim()}
+                      loading={reject.isPending && reject.variables?.id === a.id}
+                    >
+                      Decline class
+                    </Button>
+                  </form>
+                )}
               </li>
             ))}
           </ul>

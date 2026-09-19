@@ -20,6 +20,7 @@ import {
   getStudentMetrics,
   getStudentProgress,
   searchStudents,
+  getStudentSubjectSummary,
 } from '../../lib/api/principal'
 
 export function StudentsPage() {
@@ -159,7 +160,7 @@ export function StudentsPage() {
 
 // ── Student detail ────────────────────────────────────────────────────
 
-type Tab = 'progress' | 'metrics' | 'journey'
+type Tab = 'progress' | 'metrics' | 'journey' | 'subjects'
 
 const STATUS_TONE: Record<string, 'success' | 'gold' | 'accent' | 'neutral'> = {
   green: 'success',
@@ -236,6 +237,7 @@ export function PrincipalStudentDetailPage() {
             ['progress', 'Tests'],
             ['metrics', 'Behaviors'],
             ['journey', 'Journey'],
+            ['subjects', 'Subjects'],
           ] as [Tab, string][]
         ).map(([key, label]) => (
           <button
@@ -282,6 +284,7 @@ export function PrincipalStudentDetailPage() {
       )}
       {tab === 'metrics' && <MetricsTab studentId={studentId} />}
       {tab === 'journey' && <JourneySection studentId={studentId} />}
+      {tab === 'subjects' && <SubjectsSection studentId={studentId} />}
     </div>
   )
 }
@@ -377,5 +380,39 @@ function JourneySection({ studentId }: { studentId: string }) {
         </table>
       )}
     </Card>
+  )
+}
+
+function SubjectsSection({ studentId }: { studentId: string }) {
+  const q = useQuery({ queryKey: principalKeys.studentSubjects(studentId), queryFn: () => getStudentSubjectSummary(studentId) })
+  if (q.isPending) return <LoadingState />
+  if (q.isError) return <ErrorState title="Couldn't load subjects" error={q.error} onRetry={() => q.refetch()} />
+  const d = q.data
+  if (!d.subjects.length) return <EmptyState icon="book" title="No practice yet" />
+  return (
+    <div className="grid gap-4 md:grid-cols-2" data-testid="student-subjects">
+      {d.subjects.map((s) => (
+        <Card key={s.name} className="p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl" aria-hidden="true">{s.icon}</span>
+              <h3 className="text-base font-semibold text-ink">{s.name}</h3>
+            </div>
+            {s.readiness_level && s.readiness_level_display ? (
+              <ReadinessChip level={s.readiness_level} display={s.readiness_level_display} />
+            ) : (
+              <Badge tone="neutral">{s.readiness_group}</Badge>
+            )}
+          </div>
+          <p className="mt-2 text-xs text-ink-muted">
+            {s.worksheets_done}/{s.worksheets_total} tests · {s.session_count} sessions · {s.questions_count} questions
+          </p>
+          {s.insight && <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.insight}</p>}
+          {s.topic_breakdown.needs_help.length > 0 && (
+            <p className="mt-2 text-xs text-ink-muted">Needs a hand: {s.topic_breakdown.needs_help.join(', ')}</p>
+          )}
+        </Card>
+      ))}
+    </div>
   )
 }

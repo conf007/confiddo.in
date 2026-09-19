@@ -218,6 +218,8 @@ function ReportBody({
 
 // ── Achievements ──────────────────────────────────────────────────────
 
+const HIDDEN_STATS = new Set(['Total XP', 'Class Rank', 'Out of', 'Level'])
+
 export function AchievementsPage() {
   const { childId = '' } = useParams()
   const q = useQuery({
@@ -236,7 +238,7 @@ export function AchievementsPage() {
         subtitle="Wins worth a hug — share them if you like."
       />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {q.data.achievements.map((a, i) => (
+        {q.data.achievements.filter((a) => a.type !== 'top_ranker').map((a, i) => (
           <Card key={i} className="flex h-full flex-col p-6">
             <div className="flex items-center gap-3">
               <span className="text-3xl" aria-hidden>
@@ -249,14 +251,14 @@ export function AchievementsPage() {
             </div>
             <p className="mt-3 flex-1 text-sm leading-relaxed text-ink-soft">{a.message}</p>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-xl bg-surface p-3 text-center">
-                <p className="text-lg font-bold text-ink">{a.stat_value}</p>
-                <p className="text-[11px] font-medium text-ink-muted">{a.stat_label}</p>
-              </div>
-              <div className="rounded-xl bg-surface p-3 text-center">
-                <p className="text-lg font-bold text-ink">{a.secondary_stat_value}</p>
-                <p className="text-[11px] font-medium text-ink-muted">{a.secondary_stat_label}</p>
-              </div>
+              {[[a.stat_label, a.stat_value], [a.secondary_stat_label, a.secondary_stat_value]]
+                .filter(([label]) => !HIDDEN_STATS.has(label))
+                .map(([label, value]) => (
+                  <div key={label} className="rounded-xl bg-surface p-3 text-center">
+                    <p className="text-lg font-bold text-ink">{value}</p>
+                    <p className="text-[11px] font-medium text-ink-muted">{label}</p>
+                  </div>
+                ))}
             </div>
             <ShareActions className="mt-4" text={`${a.title} — ${a.message}`} />
           </Card>
